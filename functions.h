@@ -3,8 +3,10 @@
 #include <string.h>
 #include <float.h>
 
-char *output_name;
+char *input_name, *output_name;
 FILE *input_f, *output_f;
+unsigned int n;
+unsigned int max_iter;
 
 
 void processing_arguments (int argc, char const *argv[]);
