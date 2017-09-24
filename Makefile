@@ -11,5 +11,8 @@ invmat: $(objs)
 main.o: main.c functions.c functions.h
 functions.o: functions.c functions.h
 
+doc:
+	doxygen
+
 clean:
 	-rm $(objs) *~ invmat

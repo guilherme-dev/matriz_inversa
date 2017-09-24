@@ -18,7 +18,6 @@ void processa_argumentos (int argc, char const *argv[]) {
 			output_name = malloc(sizeof(char) * strlen(argv[i+1]));
 			strcpy(output_name, argv[i+1]);
 			output_f = fopen(output_name, "wr");
-			printf("Abriu arquivo\n");
 		}
 		else if (strcmp(argv[i], "-r") == 0 && read_file == 0) {
 			if (atoi(argv[i+1]) <= 1) {
@@ -32,9 +31,9 @@ void processa_argumentos (int argc, char const *argv[]) {
 			if (! (U = (double *) malloc (N * N * sizeof(double))) )
 				exit(-1);
 			// print_matriz(A, N);
-			for (i = 0; i < N * N; ++i)
+			for (k = 0; k < N * N; ++k)
 			{
-				U[i] = A[i];
+				U[k] = A[k];
 			}
 			// print_matriz(A, N);
 		}
@@ -44,6 +43,7 @@ void processa_argumentos (int argc, char const *argv[]) {
 				fprintf(stderr, "Modo de uso: invmat [-i arquivo_entrada] [-o arquivo_saida] [-r N] -i k\n");
 				exit(-1);
 			}
+			max_iter = atoi(argv[i+1]);
 			iter = 1;
 		}
 		else {
@@ -97,13 +97,13 @@ int compara_float(double a, double b, char operacao) {
 	b = fabs(b);
 	maior = (b > a) ? b : a;
 
-	if (operacao == IGUAL) {
+	if (operacao == MENOR_IGUAL) {
 		if (diff_abs <= maior * DBL_EPSILON)
 			return 1;
 		else 
 			return 0;
 	} else if (operacao == MENOR) {
-		if (diff < maior * DBL_EPSILON)
+		if (diff <=  DBL_EPSILON)
 			return 1;
 		else 
 			return 0;
@@ -145,5 +145,26 @@ void print_matriz(double *A, int n) {
 			printf("%g ", A[i*n + j]);
 		}
 		printf("\n");
+	}
+}
+
+void gerar_saida (void) {
+	double media_iter, media_res = 0.0;
+
+	fprintf(output_f, "#\n");
+	for (i = 0; i < max_iter; ++i) {
+		media_res += temp_res[i];
+		media_iter += temp_iter[i];
+		fprintf(output_f, "# iter %d: ||%.17g||\n", i, r[i]);
+	}
+	fprintf(output_f, "# Tempo LU: %g\n", temp_lu);
+	fprintf(output_f, "# Tempo iter: %.17g\n", media_iter / max_iter);
+	fprintf(output_f, "# Tempo residuo: %.17g\n", media_res / max_iter);
+	fprintf(output_f, "#\n");
+	for (i = 0; i < N; i++) {
+		for (j = 0; j < N; j++) {
+			fprintf(output_f, "%g ", AX_T[i*N + j]);
+		}
+		fprintf(output_f, "\n");
 	}
 }
