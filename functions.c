@@ -1,5 +1,7 @@
 #include "functions.h"
 
+
+
 void processa_argumentos (int argc, char const *argv[]) {
     int i, iter, read_file, gerar_matriz;
     i = iter = read_file = gerar_matriz = 0;
@@ -16,6 +18,7 @@ void processa_argumentos (int argc, char const *argv[]) {
 			output_name = malloc(sizeof(char) * strlen(argv[i+1]));
 			strcpy(output_name, argv[i+1]);
 			output_f = fopen(output_name, "wr");
+			printf("Abriu arquivo\n");
 		}
 		else if (strcmp(argv[i], "-r") == 0 && read_file == 0) {
 			if (atoi(argv[i+1]) <= 1) {
@@ -26,6 +29,13 @@ void processa_argumentos (int argc, char const *argv[]) {
 			N = atoi(argv[i+1]);
 			gerar_matriz = 1;
 			A = generateSquareRandomMatrix(N);
+			if (! (U = (double *) malloc (N * N * sizeof(double))) )
+				exit(-1);
+			// print_matriz(A, N);
+			for (i = 0; i < N * N; ++i)
+			{
+				U[i] = A[i];
+			}
 			// print_matriz(A, N);
 		}
 		else if (strcmp(argv[i], "-i") == 0) {
@@ -42,11 +52,11 @@ void processa_argumentos (int argc, char const *argv[]) {
 			exit(-1);
 		}
 	}  //end for
-	if (iter == 0) {
-		fprintf(stderr, "Numero de iteracoes nao fornecido! Abortando.\n");
-		fprintf(stderr, "Modo de uso: invmat [-i arquivo_entrada] [-o arquivo_saida] [-r N] -i k\n");
-		exit(-1);
-	}
+	// if (iter == 0) {
+	// 	fprintf(stderr, "Numero de iteracoes nao fornecido! Abortando.\n");
+	// 	fprintf(stderr, "Modo de uso: invmat [-i arquivo_entrada] [-o arquivo_saida] [-r N] -i k\n");
+	// 	exit(-1);
+	// }
 	if (read_file)
 		read_matriz(read_file);
 }
@@ -79,31 +89,26 @@ void read_matriz (int read_file) {
 	}
 }
 
-void backward_substitution (void) {
-	double soma;
-	x[N-1] = z[N-1] / U[(N*N)-1];
-	for (k = N-2; k >= 0; --k)
-	{
-		soma = z[k];
-		for (j = k + 1; j < N; ++j)
-		{
-			soma = soma - U[k*N+j] * x[j];
-		}
-		x[k] = soma / U[k*N + k];
-	}
-}
+int compara_float(double a, double b, char operacao) {
+	double diff_abs = fabs(a - b);
+	double diff = a - b;
+	double maior;
+	a = fabs(a);
+	b = fabs(b);
+	maior = (b > a) ? b : a;
 
-void forward_substitution (void) {
-	double soma;
-	z[0] = b[0] / L[0];
-	for (k = 0; k < N; ++k) {
-		soma = b[k];
-		for (j = k + 1; j < N; ++j)
-		{
-			soma = soma - L[k*N+j] * z[j];
-		}
-		z[k] = soma / L[k*N + k];
+	if (operacao == IGUAL) {
+		if (diff_abs <= maior * DBL_EPSILON)
+			return 1;
+		else 
+			return 0;
+	} else if (operacao == MENOR) {
+		if (diff < maior * DBL_EPSILON)
+			return 1;
+		else 
+			return 0;
 	}
+	return 0;
 }
 
 double *generateSquareRandomMatrix(int n )

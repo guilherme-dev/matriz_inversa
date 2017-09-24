@@ -3,8 +3,11 @@
 
 #include "functions.h"
 
+
+
 int main(int argc, char const *argv[])
 {
+	srand( 20162 );
 	double maior, temp, m, soma;
 	int aux;
 	processa_argumentos(argc, argv); 
@@ -25,24 +28,30 @@ int main(int argc, char const *argv[])
 	if (! (AI = (double *) malloc (N * N * sizeof(double))) )
 		exit(-1);
 
-
 	// printf("\n");
 	//INICIO DA FATORACAO LU
 	for (k = 0; k < N - 1; ++k)
 	{
 		//Pivotamento Parcial
+		// printf("pivotamento %d\n", k);
 		maior = fabs(U[k*N + k]);
 		l = k;
+		// printf("l: %d\n", l);
 		//Encontra maior pivo
 		for (i = k; i < N; ++i){
-			if (fabs(U[i*N+k]) > maior)
+			// printf("Maior: %.17g\n", maior);
+			if ( compara_float(maior, fabs(U[i*N+k]), MENOR) )
 			{
 				maior = fabs(U[i*N+k]);
 				l = i;
+
+			} else if ( compara_float(maior, 0.0, IGUAL ) ) {
+				printf("ERRO! Pivo == 0, matriz nao possui inversa!\n");
+				exit(-1);
 			}
 		}
 		if (l != k) {
-			printf("Troca de linha: %d -> %d\n", k, l);
+			// printf("Troca de linha: %d -> %d\n", k, l);
 			//Troca de linhas
 
 			for (j = 0; j < N; ++j)
@@ -63,10 +72,10 @@ int main(int argc, char const *argv[])
 		}
 		//Gerando matriz U a partir da elimacao de gauss
 		//E preenchendo matriz L
-		printf("Entra eliminacao de gauss\n");
+		// printf("Entra eliminacao de gauss\n");
 		for (i = k + 1; i < N; ++i)
 		{
-			printf("A[k*N + k]: %.17g\n", U[k*N + k]);
+			// printf("A[k*N + k]: %.17g\n", U[k*N + k]);
 			m = U[i*N+k] / U[k*N + k];
 			L[i*N+k] = m;
 			for (j = 0; j < N; ++j)
@@ -77,10 +86,10 @@ int main(int argc, char const *argv[])
 	}
 
 	
-		for (i = 0; i < N; ++i)
-		{
-			printf("%d ", row[i]);
-		}
+		// for (i = 0; i < N; ++i)
+		// {
+		// 	printf("%d ", row[i]);
+		// }
 		L[0] = 1.0;
 		for (i = 1; i < N; ++i) {
 			for (j = 0; j < i; ++j)
@@ -93,13 +102,13 @@ int main(int argc, char const *argv[])
 
 		for (i = 0; i < N; i++)
 		{
-			printf("i: %d N:%d\n", i, N);
+			// printf("i: %d N:%d\n", i, N);
 			for ( k = 0; k < N; ++k)
 			{
 				b[k] = (k == i) ? 1.0 : 0.0;
 				z[k] = 0.0;
 			}
-			printf("\n");
+			// printf("\n");
 			//forward Lz = b
 			soma = 0.0;
 			for (k = 0; k < N; ++k) {
@@ -129,36 +138,34 @@ int main(int argc, char const *argv[])
 				AI[row[i]*N+k] = x[k];
 			}
 
-			printf("z:\n");
-			for (k = 0; k < N; ++k)
-			{
-				printf("%.17g ", z[k]);
-			}
-			printf("\nx:\n");
-			for (k = 0; k < N; ++k)
-			{
-				printf("%.17g ", x[k]);
-			}
-			printf("\n");
+			// printf("z:\n");
+			// for (k = 0; k < N; ++k)
+			// {
+			// 	printf("%.17g ", z[k]);
+			// }
+			// printf("\nx:\n");
+			// for (k = 0; k < N; ++k)
+			// {
+			// 	printf("%.17g ", x[k]);
+			// }
+			// printf("\n");
 		}
 	
 
-	printf("matriz A:\n");
-	print_matriz (A, N);
-	printf("Matriz U:\n");
-	print_matriz (U, N);
-	printf("Matriz L:\n");
-	print_matriz (L, N);
+	// printf("matriz A:\n");
+	// print_matriz (A, N);
+	// printf("Matriz U:\n");
+	// print_matriz (U, N);
+	// printf("Matriz L:\n");
+	// print_matriz (L, N);
 	printf("Matriz AI:\n");
 	for ( i = 0; i < N; ++i)
 	{
-		printf("%d ", i );
 		for ( j = 0; j < N; ++j)
 		{
-
-			printf("%.17g ", AI[j*N+i]);
+			fprintf(output_f, "%.17g ", AI[j*N+i]);
 		}
-		printf("\n");
+		fprintf(output_f, "\n");
 	}
 
 
