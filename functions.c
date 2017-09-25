@@ -1,7 +1,10 @@
 #include "functions.h"
 
 
-
+/**
+ * Processa argumentos de entrada
+ * 
+ */
 void processa_argumentos (int argc, char const *argv[]) {
     int i, iter, read_file, gerar_matriz;
     i = iter = read_file = gerar_matriz = 0;
@@ -25,17 +28,20 @@ void processa_argumentos (int argc, char const *argv[]) {
 				fprintf(stderr, "Modo de uso: invmat [-i arquivo_entrada] [-o arquivo_saida] [-r N] -i k\n");
 				exit(-1);
 			}
+
+			//GERA MATRIZ ALEATORIA
 			N = atoi(argv[i+1]);
 			gerar_matriz = 1;
 			A = generateSquareRandomMatrix(N);
+			//NECESSARIO ALOCAR U AQUI PARA JÁ EFETUAR U = A;
 			if (! (U = (double *) malloc (N * N * sizeof(double))) )
 				exit(-1);
-			// print_matriz(A, N);
+			
 			for (k = 0; k < N * N; ++k)
 			{
 				U[k] = A[k];
 			}
-			// print_matriz(A, N);
+			
 		}
 		else if (strcmp(argv[i], "-i") == 0) {
 			if (atoi(argv[i+1]) <= 0) {
@@ -52,15 +58,19 @@ void processa_argumentos (int argc, char const *argv[]) {
 			exit(-1);
 		}
 	}  //end for
-	// if (iter == 0) {
-	// 	fprintf(stderr, "Numero de iteracoes nao fornecido! Abortando.\n");
-	// 	fprintf(stderr, "Modo de uso: invmat [-i arquivo_entrada] [-o arquivo_saida] [-r N] -i k\n");
-	// 	exit(-1);
-	// }
+	if (iter == 0) {
+		fprintf(stderr, "Numero de iteracoes nao fornecido! Abortando.\n");
+		fprintf(stderr, "Modo de uso: invmat [-i arquivo_entrada] [-o arquivo_saida] [-r N] -i k\n");
+		exit(-1);
+	}
 	if (read_file)
 		read_matriz(read_file);
 }
 
+/**
+ * Efetua leitura da matriz A a partir do arquivo de entrada.
+ * BUG CONHECIDO: Não lê matriz direto do terminal
+ */
 void read_matriz (int read_file) {
 	int i;
 	if (read_file == 1) {
@@ -85,10 +95,14 @@ void read_matriz (int read_file) {
 	} else {
 		printf("Digite a dimensao da matriz\n");
 		fscanf(stdin, "%d", &N);	
-		//ler matriz do terminal 
+		printf("Oooops! leitura pelo terminal ainda nao desenvolvida\n");
 	}
 }
 
+/**
+ * Efetua comparações em ponto flutuante. Utiliza DBL_EPSILON como limite de erro.
+ * 
+ */
 int compara_float(double a, double b, char operacao) {
 	double diff_abs = fabs(a - b);
 	double diff = a - b;
@@ -148,11 +162,34 @@ void print_matriz(double *A, int n) {
 	}
 }
 
+/**
+ * Efetua soma de kahan para vetor[].
+ * 
+ */
+double soma_kahan (double *v, int n) {
+    double sum = 0.0;
+    double c = 0.0;                 // A running compensation for lost low-order bits.
+    double y, t;
+    int i;
+    for (i = 0; i < n; ++i)
+    {
+    	y = v[i] - c;
+    	t = sum + y;
+    	c = (t - sum) - y;
+    	sum = t;
+    }
+    return sum;
+}
+
+/**
+ * Imprime resultado no arquivo de saída.
+ * 
+ */
 void gerar_saida (void) {
 	double media_iter, media_res = 0.0;
 
 	fprintf(output_f, "#\n");
-	for (i = 0; i < max_iter; ++i) {
+	for (i = 0; i < max_iter && r[i] >= 0; ++i) {
 		media_res += temp_res[i];
 		media_iter += temp_iter[i];
 		fprintf(output_f, "# iter %d: ||%.17g||\n", i, r[i]);
@@ -163,7 +200,7 @@ void gerar_saida (void) {
 	fprintf(output_f, "#\n");
 	for (i = 0; i < N; i++) {
 		for (j = 0; j < N; j++) {
-			fprintf(output_f, "%g ", AX_T[i*N + j]);
+			fprintf(output_f, "%g ", AX[i+N*j]);
 		}
 		fprintf(output_f, "\n");
 	}
