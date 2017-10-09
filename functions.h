@@ -10,9 +10,7 @@
 #define MENOR 2
 #define MENOR_IGUAL 3
 
-char *input_name, 			 /**< Strings para nome do arquivo de input*/
-		*output_name;		/**< Strings para nome do arquivo de output */
-FILE *input_f, *output_f; 	/**< Arquivos */
+
 int N,  					/**< Dimensão da Matriz A (Ax = b) */
 	max_iter,				/**< Quantidade máxima de iterações */
 	*row, 					/**< vetor de dimensão N. Serve como vetor de índices para auxílio nas trocas de linhas */
@@ -34,8 +32,7 @@ double *A, 				/**< Matriz A[N][N] implementada como um vetor[N*N], padrão mant
 	   *z; 				/**< vetor[N] auxiliar utilizado em Lz = I */
 
 
-void processa_argumentos (int argc, char const *argv[]);
-void read_matriz (int read_file);
+void processa_argumentos (int argc, char const *argv[], int *n, int *max_iter, double *A, int *opt);
 int compara_float(double a, double b, char operacao);
 double *generateSquareRandomMatrix(int n );
 double timestamp (void);

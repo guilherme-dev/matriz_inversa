@@ -5,47 +5,45 @@
  * Processa argumentos de entrada
  * 
  */
-void processa_argumentos (int argc, char const *argv[]) {
-    int i, iter, read_file, gerar_matriz;
-    i = iter = read_file = gerar_matriz = 0;
-
-    if (argc < 1) exit(-1);
+void processa_argumentos (int argc, char const *argv[], int *n, int *max_iter, double *A, int *opt) {
+    int i, iter, gerar_matriz;
+    i = iter =  gerar_matriz = 0;
+    char 
+    if (argc < 1) 
+    	exit(-1);
    	for (i = 1; i < argc; i += 2) {
 		if (strcmp(argv[i], "-e") == 0 && gerar_matriz == 0) {
-			input_name = malloc(sizeof(char) * strlen(argv[i+1]));
-			strcpy(input_name, argv[i+1]);
-			input_f = fopen(input_name, "r");
-			read_file = 1;
+			
+			opt[0] = 1; //Arquivo de entrada fornecido
 		}
-		else if (strcmp(argv[i], "-o") == 0) {
-			output_name = malloc(sizeof(char) * strlen(argv[i+1]));
-			strcpy(output_name, argv[i+1]);
-			output_f = fopen(output_name, "wr");
-		}
-		else if (strcmp(argv[i], "-r") == 0 && read_file == 0) {
+		else if (strcmp(argv[i], "-r") == 0) {
 			if (atoi(argv[i+1]) <= 1) {
 				fprintf(stderr, "O valor de n deve ser maior que 1\n");
 				fprintf(stderr, "Modo de uso: invmat [-i arquivo_entrada] [-o arquivo_saida] [-r N] -i k\n");
 				exit(-1);
 			}
+			gerar_matriz = 1;
+			*n = atoi(argv[i+1]);
 
 			//GERA MATRIZ ALEATORIA
-			N = atoi(argv[i+1]);
-			gerar_matriz = 1;
-			A = generateSquareRandomMatrix(N);
+			A = generateSquareRandomMatrix(*n);
 			//NECESSARIO ALOCAR U AQUI PARA JÁ EFETUAR U = A;
-			if (! (U = (double *) malloc (N * N * sizeof(double))) )
-				exit(-1);
+			// if (! (U = (double *) malloc (N * N * sizeof(double))) )
+			// 	exit(-1);
 			
-			for (k = 0; k < N * N; ++k)
-			{
-				U[k] = A[k];
-			}
+			// for (k = 0; k < N * N; ++k)
+			// {
+			// 	U[k] = A[k];
+			// }
 			
 		}
+		else if (strcmp(argv[i], "-o") == 0) {
+			
+			opt[1] = 1; //Arquivo de saida fornecido
+		}
 		else if (strcmp(argv[i], "-i") == 0) {
-			if (atoi(argv[i+1]) <= 0) {
-				fprintf(stderr, "O valor de iteracoes deve ser maior que 0\n");
+			if (atoi(argv[i+1]) < 0) {
+				fprintf(stderr, "O valor de iteracoes deve ser maior ou igual a 0\n");
 				fprintf(stderr, "Modo de uso: invmat [-i arquivo_entrada] [-o arquivo_saida] [-r N] -i k\n");
 				exit(-1);
 			}
@@ -63,40 +61,8 @@ void processa_argumentos (int argc, char const *argv[]) {
 		fprintf(stderr, "Modo de uso: invmat [-i arquivo_entrada] [-o arquivo_saida] [-r N] -i k\n");
 		exit(-1);
 	}
-	if (read_file)
-		read_matriz(read_file);
-}
-
-/**
- * Efetua leitura da matriz A a partir do arquivo de entrada.
- * BUG CONHECIDO: Não lê matriz direto do terminal
- */
-void read_matriz (int read_file) {
-	int i;
-	if (read_file == 1) {
-		fscanf(input_f, "%d", &N);
-
-		//Inicializa Matriz A
-		if (! (A = (double *) malloc (N * N * sizeof(double))) )
-			exit(-1);
-		if (! (U = (double *) malloc (N * N * sizeof(double))) )
-			exit(-1);
-		
-		if (!A || !U) {
-			printf("Erro na alocacao das matrizes A U\n");
-			exit(-1);
-		}
-		
-		for (i = 0; i < N * N; i++) {
-			fscanf(input_f, "%lf", &A[i]);
-			U[i] = A[i];
-		}
-		// print_matriz(A, N);
-	} else {
-		printf("Digite a dimensao da matriz\n");
-		fscanf(stdin, "%d", &N);	
-		printf("Oooops! leitura pelo terminal ainda nao desenvolvida\n");
-	}
+	// if (opt[0])
+	// 	read_matriz(read_file);
 }
 
 /**

@@ -159,8 +159,46 @@ int main(int argc, char const *argv[])
 {
 	srand( 20162 );
 	double aux, soma; 
-	processa_argumentos(argc, argv); 
+	char	*input_name, 			/**< Strings para nome do arquivo de input*/
+			*output_name;			/**< Strings para nome do arquivo de output */
+	FILE	*input_f,				/**< Arquivo entrada */
+			*output_f;				/**< Arquivo saida */
+
+	int opt[2];						/**< Auxiliar para opções de entrada e saida*/
+
+
+	processa_argumentos(argc, argv, &n, &max_iter, A, opt); 
+	
+	//Se foi passado arquivo de entrada como parametro
+	if (opt[0]) { 
+		//Abre arquivos
+		input_name = malloc(sizeof(char) * strlen(argv[i+1]));
+		strcpy(input_name, argv[i+1]);
+		input_f = fopen(input_name, "r");
+		
+		fscanf(input_f, "%d", &n);
+
+		if (! (A = (double *) malloc (n * n * sizeof(double))) )
+			exit(-1);
+		
+		for (i = 0; i < N * N; i++) {
+			fscanf(input_f, "%lf", &A[i]);
+		}
+
+	} else {
+		A = generateSquareRandomMatrix(n);
+	}
+
+
+
+	if (opt[1]) {
+		output_name = malloc(sizeof(char) * strlen(argv[i+1]));
+		strcpy(output_name, argv[i+1]);
+		output_f = fopen(output_name, "wr");
+	}
+
 	aloca_estruturas();
+
 
 	for (i = 0; i < N; ++i)
 		row[i] = i; // < Inicializa vetor de indices 
@@ -172,11 +210,11 @@ int main(int argc, char const *argv[])
 	temp_lu = temp_end - temp_begin;
 	
 	// Inicializa matriz I (identidade), mantendo as trocas de linhas feitas durante o pivotamento
-	for (i = 0; i < N; ++i) {
-		for (j = 0; j < N; ++j) {
-			I[row[i]*N+j] = (j == i) ? 1.0 : 0.0;
-		}
-	} 
+	// for (i = 0; i < N; ++i) {
+	// 	for (j = 0; j < N; ++j) {
+	// 		I[row[i]*N+j] = (j == i) ? 1.0 : 0.0;
+	// 	}
+	// } 
 	//Encontra primeira Solucao X0
 	temp_begin = timestamp();
 	for (i = 0; i < N; i++) { //Resolve N sistemas lineares para as Xn colunas de AI
@@ -260,8 +298,12 @@ int main(int argc, char const *argv[])
 	free(z);
 	free(temp_iter);
 	free(temp_res);
-	if (output_f)
+	if (opt[1]) {
+		output_name = malloc(sizeof(char) * strlen(argv[i+1]));
+		strcpy(output_name, argv[i+1]);
+		output_f = fopen(output_name, "wr");
 		fclose(output_f);
+	}
 	if (input_f)
 		fclose (input_f);
 	return 0;
