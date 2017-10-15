@@ -1,16 +1,16 @@
+/**
+ * @brief
+ *
+ * \author Guilherme Santos
+ *
+ * @param w
+ *
+ * @return
+ */
+
+
+
 #include "functions.h"
-// int N,  max_iter, *row, i, j, k, l;
-// *A matriz A, nao altera
-// *AX matriz N * N contendo todos os x, ou seja, matriz inversa
-// *AX_T matriz AX transposta, uma vez que AX eh vetor [x0 x1 x2....]
-// *AW igual AX, mas pra calcular o valor w (x' = x + w)
-// *A_AI A * AX, tem que dar a matriz identidade
-// *L 
-// *U
-// *R matriz N * N pra guardar o residuo R[i][j]
-// *b
-// *z
-// *x; vetor tamanho N pra armazenar o x de cada SL calculado, AX guarda o x da iteracao
 
 /**
  * Aloca dinamicamente todas as estruturas de dados
@@ -37,6 +37,8 @@ void aloca_estruturas (void) {
 		exit(-1);
 	if (! (L = (double *) malloc (N * N * sizeof(double))) )
 		exit(-1);
+	if (! (U = (double *) malloc (N * N * sizeof(double))) )
+		exit(-1);
 	if (! (AX = (double *) malloc (N * N * sizeof(double))) )
 		exit(-1);
 	if (! (AW = (double *) malloc (N * N * sizeof(double))) )
@@ -50,27 +52,33 @@ void aloca_estruturas (void) {
 }
 
 /**
- * Efetua a fatoração LU. 
- * Utiliza compara_float() para comparações durante o pivotamento.
+ * @brief
+ *
+ * Efetua decomposição LU
+ *
+ * @param void
  */
 void lu_decomposition (void) {
 	double maior, temp, m;
 	int aux;
+	for (i = 0; i < N * N; ++i) {
+		U[i] = A[i];
+	}
+    //Pivotamento Parcial
 	for (k = 0; k < N - 1; ++k)
 	{
-		//Pivotamento Parcial
 		maior = fabs(U[k*N + k]);
 		l = k;
-		//Encontra maior pivo
-		for (i = k; i < N; ++i){
-			if ( compara_float(maior, fabs(U[i*N+k]), MENOR_IGUAL) ) 
+		for (i = k; i < N; ++i){  //Encontra maior pivo
+			if ( fabs(U[i*N+j]) > maior )
 			{
 				maior = fabs(U[i*N+k]);
 				l = i;
-			} else if ( compara_float(maior, 0.0, MENOR_IGUAL ) ) { 
-				printf("ERRO! Pivo == %.17g, matriz nao possui inversa!\n", maior);
-				exit(-1);
 			}
+            if (maior == 0.0) {
+               printf("ERRO! Pivo == %.17g, matriz nao possui inversa!\n", maior);
+               exit(-1);
+            }
 		}
 		if (l != k) {
 			for (j = 0; j < N; ++j)
@@ -79,7 +87,7 @@ void lu_decomposition (void) {
 				U[k*N+j] = U[l*N+j];
 				U[l*N+j] = temp;
 
-				temp = L[k*N+j];
+                temp = L[k*N+j];
 				L[k*N+j] = L[l*N+j];
 				L[l*N+j] = temp;
 			}
@@ -89,10 +97,8 @@ void lu_decomposition (void) {
 		}
 		// Gerando matriz U a partir da elimacao de gauss
 		// E preenchendo matriz L
-		// printf("Entra eliminacao de gauss\n");
 		for (i = k + 1; i < N; ++i)
 		{
-			// printf("A[k*N + k]: %.17g\n", U[k*N + k]);
 			m = U[i*N+k] / U[k*N + k];
 			L[i*N+k] = m;
 			for (j = k; j < N; ++j)
@@ -112,15 +118,11 @@ void lu_decomposition (void) {
 	}
 }
 /**
- * Efetua a forward substitution para resolver Lz = R, onde R(0) = I. 
- * 
+ * Efetua a forward substitution para resolver Lz = R, onde R(0) = I.
+ *
  */
 void forward_subs (double *L, double *z, double *R, int iter) {
 	double soma;
-	for ( k = 0; k < N; ++k)
-	{
-		z[k] = 0.0;
-	} 
 	soma = 0.0;
 	for (k = 0; k < N; ++k) {
 	   soma = R[row[iter]*N+k];
@@ -134,7 +136,7 @@ void forward_subs (double *L, double *z, double *R, int iter) {
 
 /**
  * Efetua backward substitution para resolver Ux = z;
- * 
+ *
  */
 void backward_subs (double *U, double *x, double *z, int iter) {
 	double soma = 0.0;
@@ -153,70 +155,68 @@ void backward_subs (double *U, double *x, double *z, int iter) {
 
 /**
  * Executa maior parte do método
- * 
+ *
  */
 int main(int argc, char const *argv[])
 {
 	srand( 20162 );
-	double aux, soma; 
-	char	*input_name, 			/**< Strings para nome do arquivo de input*/
-			*output_name;			/**< Strings para nome do arquivo de output */
+	double aux, soma;
+	int opt[2];
+	char	*input_name, 			/**< String para nome do arquivo de input*/
+			*output_name;			/**< String para nome do arquivo de output */
 	FILE	*input_f,				/**< Arquivo entrada */
 			*output_f;				/**< Arquivo saida */
+    input_name = output_name = NULL;
 
-	int opt[2];						/**< Auxiliar para opções de entrada e saida*/
+	processa_argumentos(argc, argv, &N, &max_iter, A, opt);
 
-
-	processa_argumentos(argc, argv, &n, &max_iter, A, opt); 
-	
-	//Se foi passado arquivo de entrada como parametro
-	if (opt[0]) { 
-		//Abre arquivos
-		input_name = malloc(sizeof(char) * strlen(argv[i+1]));
-		strcpy(input_name, argv[i+1]);
+	// Se foi passado arquivo de entrada como parametro
+	if (opt[0]) {
+		// Abre arquivo de entrada e faz leitura dos dados para a matriz A
+		// Salva o valor de N
+		i = opt[0];
+		input_name = malloc(sizeof(char) * strlen(argv[i]));
+		strcpy(input_name, argv[i]);
 		input_f = fopen(input_name, "r");
-		
-		fscanf(input_f, "%d", &n);
 
-		if (! (A = (double *) malloc (n * n * sizeof(double))) )
+		fscanf(input_f, "%d", &N);
+		if (! (A = (double *) malloc (N * N * sizeof(double))) )
 			exit(-1);
-		
 		for (i = 0; i < N * N; i++) {
 			fscanf(input_f, "%lf", &A[i]);
 		}
-
 	} else {
-		A = generateSquareRandomMatrix(n);
-	}
-
-
-
-	if (opt[1]) {
-		output_name = malloc(sizeof(char) * strlen(argv[i+1]));
-		strcpy(output_name, argv[i+1]);
-		output_f = fopen(output_name, "wr");
+		if (! (A = (double *) malloc (N * N * sizeof(double))) )
+			exit(-1);
+		A = generateSquareRandomMatrix(N);
 	}
 
 	aloca_estruturas();
 
-
 	for (i = 0; i < N; ++i)
-		row[i] = i; // < Inicializa vetor de indices 
+		row[i] = i; // < Inicializa vetor de indices
 
 
 	temp_begin = timestamp();
 	lu_decomposition();
 	temp_end = timestamp();
 	temp_lu = temp_end - temp_begin;
-	
+
 	// Inicializa matriz I (identidade), mantendo as trocas de linhas feitas durante o pivotamento
-	// for (i = 0; i < N; ++i) {
-	// 	for (j = 0; j < N; ++j) {
-	// 		I[row[i]*N+j] = (j == i) ? 1.0 : 0.0;
-	// 	}
-	// } 
+	for (i = 0; i < N; ++i) {
+		for (j = 0; j < N; ++j) {
+			I[i*N+j] = (j == i) ? 1.0 : 0.0;
+            R[row[i]*N+j] = I[i*N+j];
+		}
+	}
 	//Encontra primeira Solucao X0
 	temp_begin = timestamp();
+    // printf("L\n");
+    // print_matriz(L, N);
+    // printf("I\n");
+    // print_matriz(I, N);
+    // printf("R\n");
+    // print_matriz(R, N);
 	for (i = 0; i < N; i++) { //Resolve N sistemas lineares para as Xn colunas de AI
 		forward_subs(L, z, I, i);
 		backward_subs(U, x, z, i);
@@ -226,7 +226,7 @@ int main(int argc, char const *argv[])
 		}
 	}
 	temp_end = timestamp();
- 
+
 	//INICIO REFINAMENTO SUCESSIVO
 	for (l = 0; l < max_iter; ++l) {
 		temp_iter[l] = temp_end - temp_begin;
@@ -243,8 +243,9 @@ int main(int argc, char const *argv[])
 		//Calculo matriz residuos REFINAMENTO
 		for (i = 0; i < N; ++i) {
 			for (j = 0; j < N; ++j) {
-				aux = I[row[i]*N+j] - A_AI[i*N+j];
-				R[row[i]*N+j] = (I[row[i]*N+j] - A_AI[i*N+j] <= DBL_EPSILON) ? 0 : aux;
+				// aux = I[i*N+j] - A_AI[i*N+j];
+				// R[row[i]*N+j] = (I[i*N+j] - A_AI[i*N+j] <= DBL_EPSILON) ? 0 : aux;
+                R[row[i]*N+j] = I[i*N+j] - A_AI[i*N+j];
 			}
 		}
 
@@ -258,13 +259,13 @@ int main(int argc, char const *argv[])
 			soma += soma_kahan(aux_v, N);
 		}
 
-		r[l] = fabs(sqrt(soma)); 
+		r[l] = fabs(sqrt(soma));
 		temp_end = timestamp();
 		temp_res[l] = temp_end - temp_begin;
-		if (fabs(r[l]) <= DBL_EPSILON) {
-			printf("Residuo[l] <= DBL_EPSILON, finalizando.\n");
-			break;
-		} else {
+		// if (fabs(r[l]) <= DBL_EPSILON) {
+		// 	printf("Residuo[l] <= DBL_EPSILON, finalizando.\n");
+		// 	break;
+		// } else {
 			temp_begin = timestamp();
 			for (i = 0; i < N; ++i) {
 				forward_subs(L, z, R, i);
@@ -277,16 +278,25 @@ int main(int argc, char const *argv[])
 			// Encontra nova solução X(K)
 			//X(K) = X(K-1) + W(K)
 			for (i = 0; i < N * N; ++i) {
-				aux = fabs(AW[i]);
-				if (aux > DBL_EPSILON) {
-					AX[i] += AW[i];
-				}
+    			AX[i] += AW[i];
 			}
 			temp_end = timestamp();
-		}
+		// }
 	}
 
-	gerar_saida();
+	if (opt[1]) {
+		i = opt[1];
+		output_name = malloc(sizeof(char) * strlen(argv[i]));
+		strcpy(output_name, argv[i]);
+		output_f = fopen(output_name, "wr");
+        gerar_saida(output_f);
+		fclose(output_f);
+	} else {
+		gerar_saida(stdout);
+	}
+	if (opt[0])
+		fclose (input_f);
+
 	free(A);
 	free(AX);
 	free(A_AI);
@@ -298,13 +308,5 @@ int main(int argc, char const *argv[])
 	free(z);
 	free(temp_iter);
 	free(temp_res);
-	if (opt[1]) {
-		output_name = malloc(sizeof(char) * strlen(argv[i+1]));
-		strcpy(output_name, argv[i+1]);
-		output_f = fopen(output_name, "wr");
-		fclose(output_f);
-	}
-	if (input_f)
-		fclose (input_f);
 	return 0;
 }

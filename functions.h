@@ -40,5 +40,5 @@ void print_matriz (double *A, int n);
 void aloca_estruturas (void);
 void backward_substitution(double *U, double *x, double *z, int iter);
 void forward_substitution(double *L, double *z, double *R, int iter);
-void gerar_saida(void);
+void gerar_saida(FILE *output_f);
 double soma_kahan(double *vet, int n);

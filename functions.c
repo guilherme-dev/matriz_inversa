@@ -3,18 +3,17 @@
 
 /**
  * Processa argumentos de entrada
- * 
+ *
  */
-void processa_argumentos (int argc, char const *argv[], int *n, int *max_iter, double *A, int *opt) {
+void processa_argumentos (int argc, char const *argv[], int *N, int *max_iter, double *A, int *opt) {
     int i, iter, gerar_matriz;
     i = iter =  gerar_matriz = 0;
-    char 
-    if (argc < 1) 
-    	exit(-1);
+    if (argc < 1)
+		exit(-1);
+	opt[0] = opt[1] = 0;
    	for (i = 1; i < argc; i += 2) {
 		if (strcmp(argv[i], "-e") == 0 && gerar_matriz == 0) {
-			
-			opt[0] = 1; //Arquivo de entrada fornecido
+            opt[0] = i+1;
 		}
 		else if (strcmp(argv[i], "-r") == 0) {
 			if (atoi(argv[i+1]) <= 1) {
@@ -23,23 +22,12 @@ void processa_argumentos (int argc, char const *argv[], int *n, int *max_iter, d
 				exit(-1);
 			}
 			gerar_matriz = 1;
-			*n = atoi(argv[i+1]);
-
-			//GERA MATRIZ ALEATORIA
-			A = generateSquareRandomMatrix(*n);
-			//NECESSARIO ALOCAR U AQUI PARA JÁ EFETUAR U = A;
-			// if (! (U = (double *) malloc (N * N * sizeof(double))) )
-			// 	exit(-1);
-			
-			// for (k = 0; k < N * N; ++k)
-			// {
-			// 	U[k] = A[k];
-			// }
-			
+			*N = atoi(argv[i+1]);
+			// A = generateSquareRandomMatrix(*n);
 		}
 		else if (strcmp(argv[i], "-o") == 0) {
-			
-			opt[1] = 1; //Arquivo de saida fornecido
+            //Arquivo de saida fornecido
+            opt[1] = i + 1;
 		}
 		else if (strcmp(argv[i], "-i") == 0) {
 			if (atoi(argv[i+1]) < 0) {
@@ -47,7 +35,7 @@ void processa_argumentos (int argc, char const *argv[], int *n, int *max_iter, d
 				fprintf(stderr, "Modo de uso: invmat [-i arquivo_entrada] [-o arquivo_saida] [-r N] -i k\n");
 				exit(-1);
 			}
-			max_iter = atoi(argv[i+1]);
+			*max_iter = atoi(argv[i+1]);
 			iter = 1;
 		}
 		else {
@@ -61,13 +49,11 @@ void processa_argumentos (int argc, char const *argv[], int *n, int *max_iter, d
 		fprintf(stderr, "Modo de uso: invmat [-i arquivo_entrada] [-o arquivo_saida] [-r N] -i k\n");
 		exit(-1);
 	}
-	// if (opt[0])
-	// 	read_matriz(read_file);
 }
 
 /**
  * Efetua comparações em ponto flutuante. Utiliza DBL_EPSILON como limite de erro.
- * 
+ *
  */
 int compara_float(double a, double b, char operacao) {
 	double diff_abs = fabs(a - b);
@@ -80,12 +66,12 @@ int compara_float(double a, double b, char operacao) {
 	if (operacao == MENOR_IGUAL) {
 		if (diff_abs <= maior * DBL_EPSILON)
 			return 1;
-		else 
+		else
 			return 0;
 	} else if (operacao == MENOR) {
-		if (diff <=  DBL_EPSILON)
+		if (diff <  DBL_EPSILON)
 			return 1;
-		else 
+		else
 			return 0;
 	}
 	return 0;
@@ -130,7 +116,7 @@ void print_matriz(double *A, int n) {
 
 /**
  * Efetua soma de kahan para vetor[].
- * 
+ *
  */
 double soma_kahan (double *v, int n) {
     double sum = 0.0;
@@ -149,11 +135,10 @@ double soma_kahan (double *v, int n) {
 
 /**
  * Imprime resultado no arquivo de saída.
- * 
+ *
  */
-void gerar_saida (void) {
+void gerar_saida (FILE *output_f) {
 	double media_iter, media_res = 0.0;
-
 	fprintf(output_f, "#\n");
 	for (i = 0; i < max_iter && r[i] >= 0; ++i) {
 		media_res += temp_res[i];
@@ -164,7 +149,11 @@ void gerar_saida (void) {
 	fprintf(output_f, "# Tempo iter: %.17g\n", media_iter / max_iter);
 	fprintf(output_f, "# Tempo residuo: %.17g\n", media_res / max_iter);
 	fprintf(output_f, "#\n");
-	for (i = 0; i < N; i++) {
+    #ifdef TESTE
+        if (N > 100)
+            return;
+    #endif
+	for (i = 0; i < N < 101; i++) {
 		for (j = 0; j < N; j++) {
 			fprintf(output_f, "%g ", AX[i+N*j]);
 		}
