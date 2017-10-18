@@ -5,10 +5,25 @@
 #include <math.h>
 #include <time.h>
 #include <sys/time.h>
+// This block enables to compile the code with and without the likwid header in place
+/*#ifdef LIKWID_PERFMON*/
+#include <likwid.h>
+/*#else
+#define LIKWID_MARKER_INIT
+#define LIKWID_MARKER_THREADINIT
+#define LIKWID_MARKER_SWITCH
+#define LIKWID_MARKER_REGISTER(regionTag)
+#define LIKWID_MARKER_START(regionTag)
+#define LIKWID_MARKER_STOP(regionTag)
+#define LIKWID_MARKER_CLOSE
+#define LIKWID_MARKER_GET(regionTag, nevents, events, time, count)
+#endif*/
+
 
 #define IGUAL 1
 #define MENOR 2
 #define MENOR_IGUAL 3
+#define TESTE 1
 
 
 int N,  					/**< Dimensão da Matriz A (Ax = b) */
@@ -19,7 +34,7 @@ double *r, 					/**< Vetor de dimensão \max_iter para armazenar a norma do resi
 		*aux_v;			   /**< Vetor auxiliar de dimensão N */
 double temp_begin, temp_end, temp_lu; /**< Variaveis para calculo de tempo */
 double *temp_iter, *temp_res; /**< Vetores para armazenar tempo das iterações, usado para calcular a media */
-double *A, 				/**< Matriz A[N][N] implementada como um vetor[N*N], padrão mantido para todas matrizes bidimensionais. */			
+double *A, 				/**< Matriz A[N][N] implementada como um vetor[N*N], padrão mantido para todas matrizes bidimensionais. */
 	   *x, 				/**< Vetor [N], guarda cada coluna da matriz inversa AX */
 	   *AX, 			/**< Matriz AX[N][N] auxiliar, matriz inversa (guarda todos os valores de x). */
 	   *AW, 			/**< Armazena matriz AW[N][N], gerada a partir de Aw = I, onde x = x - w */

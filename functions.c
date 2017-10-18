@@ -143,7 +143,7 @@ void gerar_saida (FILE *output_f) {
 	for (i = 0; i < max_iter && r[i] >= 0; ++i) {
 		media_res += temp_res[i];
 		media_iter += temp_iter[i];
-		fprintf(output_f, "# iter %d: ||%.17g||\n", i, r[i]);
+		fprintf(output_f, "# iter %d: ||%.17g||\n", i+1, r[i]);
 	}
 	fprintf(output_f, "# Tempo LU: %g\n", temp_lu);
 	fprintf(output_f, "# Tempo iter: %.17g\n", media_iter / max_iter);
@@ -153,7 +153,7 @@ void gerar_saida (FILE *output_f) {
         if (N > 100)
             return;
     #endif
-	for (i = 0; i < N < 101; i++) {
+	for (i = 0; i < N; i++) {
 		for (j = 0; j < N; j++) {
 			fprintf(output_f, "%g ", AX[i+N*j]);
 		}

@@ -75,7 +75,7 @@ void lu_decomposition (void) {
 				maior = fabs(U[i*N+k]);
 				l = i;
 			}
-            if (maior == 0.0) {
+            if (maior == 0.0) { //TODO ALMOST EQUAL
                printf("ERRO! Pivo == %.17g, matriz nao possui inversa!\n", maior);
                exit(-1);
             }
@@ -209,14 +209,7 @@ int main(int argc, char const *argv[])
             R[row[i]*N+j] = I[i*N+j];
 		}
 	}
-	//Encontra primeira Solucao X0
-	temp_begin = timestamp();
-    // printf("L\n");
-    // print_matriz(L, N);
-    // printf("I\n");
-    // print_matriz(I, N);
-    // printf("R\n");
-    // print_matriz(R, N);
+    temp_begin = timestamp();
 	for (i = 0; i < N; i++) { //Resolve N sistemas lineares para as Xn colunas de AI
 		forward_subs(L, z, I, i);
 		backward_subs(U, x, z, i);
@@ -228,8 +221,10 @@ int main(int argc, char const *argv[])
 	temp_end = timestamp();
 
 	//INICIO REFINAMENTO SUCESSIVO
+    LIKWID_MARKER_INIT;
 	for (l = 0; l < max_iter; ++l) {
 		temp_iter[l] = temp_end - temp_begin;
+
 		for (i = 0; i < N; i++) {
 			for (j = 0; j < N; j++) {
 				soma = 0.0;
@@ -240,11 +235,10 @@ int main(int argc, char const *argv[])
 			}
 		}
 
+
 		//Calculo matriz residuos REFINAMENTO
 		for (i = 0; i < N; ++i) {
 			for (j = 0; j < N; ++j) {
-				// aux = I[i*N+j] - A_AI[i*N+j];
-				// R[row[i]*N+j] = (I[i*N+j] - A_AI[i*N+j] <= DBL_EPSILON) ? 0 : aux;
                 R[row[i]*N+j] = I[i*N+j] - A_AI[i*N+j];
 			}
 		}
@@ -254,19 +248,15 @@ int main(int argc, char const *argv[])
 		temp_begin = timestamp();
 		for (i = 0; i < N; ++i) {
 			for (j = 0; j < N; ++j) {
-				aux_v[j] = R[row[i]*N+j] * R[row[i]*N+j];
+				soma += R[row[i]*N+j] * R[row[i]*N+j];
 			}
-			soma += soma_kahan(aux_v, N);
 		}
 
 		r[l] = fabs(sqrt(soma));
 		temp_end = timestamp();
 		temp_res[l] = temp_end - temp_begin;
-		// if (fabs(r[l]) <= DBL_EPSILON) {
-		// 	printf("Residuo[l] <= DBL_EPSILON, finalizando.\n");
-		// 	break;
-		// } else {
 			temp_begin = timestamp();
+            LIKWID_MARKER_START("mult_matrix");
 			for (i = 0; i < N; ++i) {
 				forward_subs(L, z, R, i);
 				backward_subs(U, x, z, i);
@@ -275,15 +265,15 @@ int main(int argc, char const *argv[])
 					AW[i*N+k] = x[k];
 				}
 			}
+            LIKWID_MARKER_STOP("mult_matrix");
 			// Encontra nova solução X(K)
 			//X(K) = X(K-1) + W(K)
 			for (i = 0; i < N * N; ++i) {
     			AX[i] += AW[i];
 			}
 			temp_end = timestamp();
-		// }
 	}
-
+    LIKWID_MARKER_CLOSE;
 	if (opt[1]) {
 		i = opt[1];
 		output_name = malloc(sizeof(char) * strlen(argv[i]));
@@ -296,7 +286,7 @@ int main(int argc, char const *argv[])
 	}
 	if (opt[0])
 		fclose (input_f);
-
+    printf("Fim!\n");
 	free(A);
 	free(AX);
 	free(A_AI);
