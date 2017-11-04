@@ -140,23 +140,25 @@ double soma_kahan (double *v, int n) {
 void gerar_saida (FILE *output_f) {
 	double media_iter, media_res = 0.0;
 	fprintf(output_f, "#\n");
-	for (i = 0; i < max_iter && r[i] >= 0; ++i) {
+/*	for (i = 0; i < max_iter && r[i] >= 0; ++i) {
 		media_res += temp_res[i];
 		media_iter += temp_iter[i];
 		fprintf(output_f, "# iter %d: ||%.17g||\n", i+1, r[i]);
-	}
-	fprintf(output_f, "# Tempo LU: %g\n", temp_lu);
-	fprintf(output_f, "# Tempo iter: %.17g\n", media_iter / max_iter);
-	fprintf(output_f, "# Tempo residuo: %.17g\n", media_res / max_iter);
+	}*/
+	// fprintf(output_f, "# Tempo LU: %g\n", temp_lu);
+	// fprintf(output_f, "# Tempo iter: %.17g\n", media_iter / max_iter);
+	// fprintf(output_f, "# Tempo residuo: %.17g\n", media_res / max_iter);
 	fprintf(output_f, "#\n");
-    #ifdef TESTE
-        if (N > 100)
-            return;
-    #endif
+    // #ifdef TESTE
+    //     if (N > 100)
+    //         return;
+    // #endif
 	for (i = 0; i < N; i++) {
 		for (j = 0; j < N; j++) {
 			fprintf(output_f, "%g ", AX[i+N*j]);
 		}
 		fprintf(output_f, "\n");
 	}
+    printf("Chegou no printf\n");
+    printf("t_op1 %g\nt_op2 %g\n", t_op1, t_op2);
 }

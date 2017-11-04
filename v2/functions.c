@@ -57,7 +57,6 @@ void processa_argumentos (int argc, char const *argv[], int *N, int *max_iter, d
  */
 int compara_float(double a, double b, char operacao) {
 	double diff_abs = fabs(a - b);
-	double diff = a - b;
 	double maior;
 	a = fabs(a);
 	b = fabs(b);
@@ -69,7 +68,7 @@ int compara_float(double a, double b, char operacao) {
 		else
 			return 0;
 	} else if (operacao == MENOR) {
-		if (diff <  DBL_EPSILON)
+		if (diff_abs <=  DBL_EPSILON)
 			return 1;
 		else
 			return 0;

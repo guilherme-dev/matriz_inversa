@@ -18,7 +18,7 @@
 void aloca_estruturas (void) {
 	if (! (row = (int *) malloc (N * sizeof(int))) )
 		exit(-1);
-	if (! (aux_v = (double *) malloc (N * sizeof(double))) )
+	if (! (aux_v = (double *) malloc (N * N * sizeof(double))) )
 		exit(-1);
 
 	if (! (temp_iter = (double *) malloc (max_iter * sizeof(double))) )
@@ -35,9 +35,11 @@ void aloca_estruturas (void) {
 		exit(-1);
 	if (! (x = (double *) malloc (N * sizeof(double))) )
 		exit(-1);
-	if (! (L = (double *) malloc (N * N * sizeof(double))) )
+	if (! (L = (double *) malloc (lower_tam * sizeof(double))) )
 		exit(-1);
-	if (! (U = (double *) malloc (N * N * sizeof(double))) )
+	if (! (L_aux = (double *) malloc (N * N * sizeof(double))) )
+		exit(-1);
+    if (! (U_aux = (double *) malloc (N * N * sizeof(double))) )
 		exit(-1);
 	if (! (AX = (double *) malloc (N * N * sizeof(double))) )
 		exit(-1);
@@ -58,65 +60,73 @@ void aloca_estruturas (void) {
  *
  * @param void
  */
-void lu_decomposition (void) {
-	double maior, temp, m;
-	int aux;
-	for (i = 0; i < N * N; ++i) {
-		U[i] = A[i];
-	}
-    //Pivotamento Parcial
-	for (k = 0; k < N - 1; ++k)
-	{
-		maior = fabs(U[k*N + k]);
-		l = k;
-		for (i = k; i < N; ++i){  //Encontra maior pivo
-			if ( fabs(U[i*N+j]) > maior )
-			{
-				maior = fabs(U[i*N+k]);
-				l = i;
-			}
-            if (maior == 0.0) { //TODO ALMOST EQUAL
-               printf("ERRO! Pivo == %.17g, matriz nao possui inversa!\n", maior);
-               exit(-1);
-            }
-		}
-		if (l != k) {
-			for (j = 0; j < N; ++j)
-			{
-				temp = U[k*N+j];
-				U[k*N+j] = U[l*N+j];
-				U[l*N+j] = temp;
+ void lu_decomposition (void) {
+ 	double maior, temp, m;
+ 	int aux;
+ 	for (i = 0; i < N * N; ++i) {
+ 		U_aux[i] = A[i];
+ 	}
+     //Pivotamento Parcial
+ 	for (k = 0; k < N - 1; ++k)
+ 	{
+ 		maior = fabs(U_aux[k*N + k]);
+ 		l = k;
+ 		for (i = k; i < N; ++i){  //Encontra maior pivo
+ 			if ( fabs(U_aux[i*N]) > maior )
+ 			{
+ 				maior = fabs(U_aux[i*N+k]);
+ 				l = i;
+ 			}
+             if (maior == 0.0) { //TODO ALMOST EQUAL
+                printf("ERRO! Pivo == %.17g, matriz nao possui inversa!\n", maior);
+                exit(-1);
+             }
+ 		}
+ 		if (l != k) {
+ 			for (j = 0; j < N; ++j)
+ 			{
+ 				temp = U_aux[k*N+j];
+ 				U_aux[k*N+j] = U_aux[l*N+j];
+ 				U_aux[l*N+j] = temp;
 
-                temp = L[k*N+j];
-				L[k*N+j] = L[l*N+j];
-				L[l*N+j] = temp;
-			}
-			aux = row[k];
-			row[k] = row[l];
-			row[l] = aux;
-		}
-		// Gerando matriz U a partir da elimacao de gauss
-		// E preenchendo matriz L
-		for (i = k + 1; i < N; ++i)
-		{
-			m = U[i*N+k] / U[k*N + k];
-			L[i*N+k] = m;
-			for (j = k; j < N; ++j)
-			{
-				U[i*N+j] = U[i*N+j] - m * U[k*N+j];
-			}
-		}
-	}
-	L[0] = 1.0;
-	for (i = 1; i < N; ++i) {
-		for (j = 0; j < i; ++j)
-		{
-			U[i*N+j] = 0.0;
-			if (j == i - 1)
-				L[i*N+j+1] = 1.0;
-		}
-	}
+                temp = L_aux[k*N+j];
+ 				L_aux[k*N+j] = L_aux[l*N+j];
+ 				L_aux[l*N+j] = temp;
+ 			}
+ 			aux = row[k];
+ 			row[k] = row[l];
+ 			row[l] = aux;
+ 		}
+ 		// Gerando matriz U a partir da elimacao de gauss
+ 		// E preenchendo matriz L
+ 		for (i = k + 1; i < N; ++i)
+ 		{
+ 			m = U_aux[i*N+k] / U_aux[k*N + k];
+ 			L_aux[i*N+k] = m;
+ 			for (j = k; j < N; ++j)
+ 			{
+ 				U_aux[i*N+j] = U_aux[i*N+j] - m * U_aux[k*N+j];
+ 			}
+ 		}
+ 	}
+ 	L_aux[0] = 1.0;
+ 	for (i = 1; i < N; ++i) {
+ 		for (j = 0; j < i; ++j)
+ 		{
+ 			U_aux[i*N+j] = 0.0;
+ 			if (j == i - 1)
+ 				L_aux[i*N+j+1] = 1.0;
+ 		}
+ 	}
+
+    // Inicializa o vetor alinhado L com os valores da matrix inferior
+    for (i = 0; i < N; i++ ) {
+        for (j = 0; j < i; j++) {
+            L[m_index(i,j)] = L_aux[i*N+j];
+        }
+    }
 }
+
 /**
  * Efetua a forward substitution para resolver Lz = R, onde R(0) = I.
  *
@@ -124,14 +134,14 @@ void lu_decomposition (void) {
 void forward_subs (double *L, double *z, double *R, int iter) {
 	double soma;
 	soma = 0.0;
-	for (k = 0; k < N; ++k) {
-	   soma = R[row[iter]*N+k];
+    for (k = 0; k < N; ++k) {
+       soma = R[row[iter]*N+k];
 
-	   for (j = 0; j < k; ++j) {
-	      soma = soma - L[k*N+j]*z[j];
-	   }
-	   z[k] = soma;
-	}
+       for (j = 0; j < k; ++j) {
+          soma = soma - L[m_index(k,j)]*z[j];
+       }
+       z[k] = soma;
+    }
 }
 
 /**
@@ -198,18 +208,29 @@ int main(int argc, char const *argv[])
 		row[i] = i; // < Inicializa vetor de indices
 
 
-	temp_begin = timestamp();
-	lu_decomposition();
-	temp_end = timestamp();
-	temp_lu = temp_end - temp_begin;
+	// temp_begin = timestamp();
+	// lu_decomposition();
+    lu_decomposition();
+    print_matriz(L_aux, N);
+    print_matriz(U_aux, N);
 
-	// Inicializa matriz I (identidade), mantendo as trocas de linhas feitas durante o pivotamento
-	for (i = 0; i < N; ++i) {
-		for (j = 0; j < N; ++j) {
-			I[i*N+j] = (j == i) ? 1.0 : 0.0;
+	// temp_end = timestamp();
+	// temp_lu = temp_end - temp_begin;
+    for  (i = 0; i < lower_tam; i++)
+        printf("%g ", L[i]);
+    exit(1);
+    for (i = 0; i < N; ++i) {
+        for (j = 0; j < N; ++j) {
+            I[i*N+j] = (j == i) ? 1.0 : 0.0;
             R[row[i]*N+j] = I[i*N+j];
-		}
-	}
+        }
+    }
+    // for (i = 0; i < N; ++i) {
+    //     for (j = 0; j < N; j++) {
+    //         printf("%g ", R[row[i]*N+j]);
+    //     }
+    //     printf("\n");
+    // }
     temp_begin = timestamp();
 	for (i = 0; i < N; i++) { //Resolve N sistemas lineares para as Xn colunas de AI
 		forward_subs(L, z, I, i);

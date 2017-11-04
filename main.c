@@ -70,7 +70,7 @@ void lu_decomposition (void) {
 		maior = fabs(U[k*N + k]);
 		l = k;
 		for (i = k; i < N; ++i){  //Encontra maior pivo
-			if ( fabs(U[i*N+j]) > maior )
+			if ( fabs(U[i*N]) > maior )
 			{
 				maior = fabs(U[i*N+k]);
 				l = i;
@@ -160,7 +160,7 @@ void backward_subs (double *U, double *x, double *z, int iter) {
 int main(int argc, char const *argv[])
 {
 	srand( 20162 );
-	double aux, soma;
+	double soma;
 	int opt[2];
 	char	*input_name, 			/**< String para nome do arquivo de input*/
 			*output_name;			/**< String para nome do arquivo de output */
@@ -198,10 +198,14 @@ int main(int argc, char const *argv[])
 		row[i] = i; // < Inicializa vetor de indices
 
 
-	temp_begin = timestamp();
+	// temp_begin = timestamp();
 	lu_decomposition();
-	temp_end = timestamp();
-	temp_lu = temp_end - temp_begin;
+    print_matriz(L, N);
+    printf("\n");
+    print_matriz(U, N);
+
+	// temp_end = timestamp();
+	// temp_lu = temp_end - temp_begin;
 
 	// Inicializa matriz I (identidade), mantendo as trocas de linhas feitas durante o pivotamento
 	for (i = 0; i < N; ++i) {
@@ -210,21 +214,38 @@ int main(int argc, char const *argv[])
             R[row[i]*N+j] = I[i*N+j];
 		}
 	}
-    temp_begin = timestamp();
+
+    // for (i = 0; i < N; ++i) {
+    //     for (j = 0; j < N; j++) {
+    //         printf("%g ", R[row[i]*N+j]);
+    //     }
+    //     printf("\n");
+    // }
+
+    t_op1 = t_op2 = 0.0;
+    LIKWID_MARKER_INIT;
 	for (i = 0; i < N; i++) { //Resolve N sistemas lineares para as Xn colunas de AI
+        temp_begin = timestamp();
+        // LIKWID_MARKER_START("op1");
 		forward_subs(L, z, I, i);
+        // for (k = 0; k < N; k++) {
+        //     printf("%g ", z[k]);
+        // }
+        // exit(1);
 		backward_subs(U, x, z, i);
+        // LIKWID_MARKER_STOP("op1");
+        temp_end = timestamp();
+        t_op1 += temp_end - temp_begin;
 		for ( k = 0; k < N; ++k)
 		{
 			AX[i*N+k] = x[k];
 		}
 	}
-	temp_end = timestamp();
-
 	//INICIO REFINAMENTO SUCESSIVO
-    LIKWID_MARKER_INIT;
 	for (l = 0; l < max_iter; ++l) {
-		temp_iter[l] = temp_end - temp_begin;
+		// temp_iter[l] = temp_end - temp_begin;
+        temp_begin = timestamp();
+        LIKWID_MARKER_START("op2");
 		for (i = 0; i < N; i++) {
 			for (j = 0; j < N; j++) {
 				soma = 0.0;
@@ -241,10 +262,12 @@ int main(int argc, char const *argv[])
                 R[row[i]*N+j] = I[i*N+j] - A_AI[i*N+j];
 			}
 		}
-
+        LIKWID_MARKER_STOP("op2");
+        temp_end = timestamp();
+        t_op2 += temp_end - temp_begin;
 		// NORMA DO RESIDUO
 		soma = 0.0;
-		temp_begin = timestamp();
+		// temp_begin = timestamp();
 		for (i = 0; i < N; ++i) {
 			for (j = 0; j < N; ++j) {
 				soma += R[row[i]*N+j] * R[row[i]*N+j];
@@ -252,27 +275,32 @@ int main(int argc, char const *argv[])
 		}
 
 		r[l] = fabs(sqrt(soma));
-		temp_end = timestamp();
-		temp_res[l] = temp_end - temp_begin;
-		temp_begin = timestamp();
+		// temp_end = timestamp();
+		// temp_res[l] = temp_end - temp_begin;
+		// temp_begin = timestamp();
 
-        LIKWID_MARKER_START("mult_matrix");
+
 		for (i = 0; i < N; ++i) {
+            temp_begin = timestamp();
+            LIKWID_MARKER_START("op1");
 			forward_subs(L, z, R, i);
 			backward_subs(U, x, z, i);
+            LIKWID_MARKER_STOP("op1");
+            temp_end = timestamp();
+            t_op1 += temp_end - temp_begin;
 			for ( k = 0; k < N; ++k)
 			{
 				AW[i*N+k] = x[k];
 			}
 		}
-        LIKWID_MARKER_STOP("mult_matrix");
+
 
 		// Encontra nova solução X(K)
 		//X(K) = X(K-1) + W(K)
 		for (i = 0; i < N * N; ++i) {
 			AX[i] += AW[i];
 		}
-		temp_end = timestamp();
+		// temp_end = timestamp();
 	}
     LIKWID_MARKER_CLOSE;
 	if (opt[1]) {

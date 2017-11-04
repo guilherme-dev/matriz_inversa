@@ -25,11 +25,14 @@
 #define MENOR_IGUAL 3
 #define TESTE 1
 
+#define m_size(d) (((d)*(d+1))/2)
+#define m_index(r,c) ((r)<(c) ? 0 : (m_size((r)-1)+(c)))
+#define lower_tam (m_size(N) - (N))
 
 int N,  					/**< Dimensão da Matriz A (Ax = b) */
 	max_iter,				/**< Quantidade máxima de iterações */
 	*row, 					/**< vetor de dimensão N. Serve como vetor de índices para auxílio nas trocas de linhas */
-	i, j, k, l; 			/**< Variável genérica de controle */
+	i, j, k, l, col; 			/**< Variável genérica de controle */
 double *r, 					/**< Vetor de dimensão \max_iter para armazenar a norma do residuo em cada iteração */
 		*aux_v;			   /**< Vetor auxiliar de dimensão N */
 double temp_begin, temp_end, temp_lu; /**< Variaveis para calculo de tempo */
@@ -41,6 +44,8 @@ double *A, 				/**< Matriz A[N][N] implementada como um vetor[N*N], padrão mant
 	   *A_AI, 			/**< Matriz [N][N] que armazena a multiplicação A * A_Inversa */
 	   *L, 				/**< Matriz L[N][N] da fatoração LU */
 	   *U, 				/**< Matriz U[N][N] da fatoração LU */
+       *L_aux,
+       *U_aux,
 	   *R, 				/**< Matriz R[N][N] para guardar o residuo da resolução do SL */
 	   *I, 				/**< Matriz I[N][N] para armazenar a matriz Identidade (eca)*/
 	   *b, 				/**< vetor[N] auxiliar */
