@@ -25,16 +25,19 @@
 #define MENOR_IGUAL 3
 #define TESTE 1
 
-#define m_size(d) (((d)*(d+1))/2)
-#define m_index(r,c) ((r)<(c) ? 0 : (m_size((r)-1)+(c)))
-#define lower_tam (m_size(N) - (N))
+#define size(n) (((n)*(n+1))/2)
+#define offset(i,j) (size((i)-1)+(j))
+#define index(i,j) ((i)<(j) ? 0 :  (offset((i),(j))))
+#define uindex(i,j,n) ((i)>(j) ? 0 : (size(n)-size((n)-(i))+(j)-(i)))
+
+#define lower_size (size(N) - (N))
+#define upper_size (size(N))
 
 int N,  					/**< Dimensão da Matriz A (Ax = b) */
 	max_iter,				/**< Quantidade máxima de iterações */
 	*row, 					/**< vetor de dimensão N. Serve como vetor de índices para auxílio nas trocas de linhas */
-	i, j, k, l, col; 			/**< Variável genérica de controle */
-double *r, 					/**< Vetor de dimensão \max_iter para armazenar a norma do residuo em cada iteração */
-		*aux_v;			   /**< Vetor auxiliar de dimensão N */
+	i, j, k, l; 			/**< Variável genérica de controle */
+double *r; 					/**< Vetor de dimensão \max_iter para armazenar a norma do residuo em cada iteração */
 double temp_begin, temp_end, temp_lu; /**< Variaveis para calculo de tempo */
 double *temp_iter, *temp_res; /**< Vetores para armazenar tempo das iterações, usado para calcular a media */
 double *A, 				/**< Matriz A[N][N] implementada como um vetor[N*N], padrão mantido para todas matrizes bidimensionais. */

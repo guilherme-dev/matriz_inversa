@@ -16,11 +16,6 @@
  * Aloca dinamicamente todas as estruturas de dados
  */
 void aloca_estruturas (void) {
-	if (! (row = (int *) malloc (N * sizeof(int))) )
-		exit(-1);
-	if (! (aux_v = (double *) malloc (N * N * sizeof(double))) )
-		exit(-1);
-
 	if (! (temp_iter = (double *) malloc (max_iter * sizeof(double))) )
 		exit(-1);
 	if (! (temp_res = (double *) malloc (max_iter * sizeof(double))) )
@@ -35,7 +30,9 @@ void aloca_estruturas (void) {
 		exit(-1);
 	if (! (x = (double *) malloc (N * sizeof(double))) )
 		exit(-1);
-	if (! (L = (double *) malloc (lower_tam * sizeof(double))) )
+	if (! (L = (double *) malloc (lower_size * sizeof(double))) )
+		exit(-1);
+    if (! (U = (double *) malloc (upper_size * sizeof(double))) )
 		exit(-1);
 	if (! (L_aux = (double *) malloc (N * N * sizeof(double))) )
 		exit(-1);
@@ -62,7 +59,6 @@ void aloca_estruturas (void) {
  */
  void lu_decomposition (void) {
  	double maior, temp, m;
- 	int aux;
  	for (i = 0; i < N * N; ++i) {
  		U_aux[i] = A[i];
  	}
@@ -92,10 +88,12 @@ void aloca_estruturas (void) {
                 temp = L_aux[k*N+j];
  				L_aux[k*N+j] = L_aux[l*N+j];
  				L_aux[l*N+j] = temp;
+
+                temp = R[k*N+j];
+     			R[k*N+j] = R[l*N+j];
+     			R[l*N+j] = temp;
  			}
- 			aux = row[k];
- 			row[k] = row[l];
- 			row[l] = aux;
+
  		}
  		// Gerando matriz U a partir da elimacao de gauss
  		// E preenchendo matriz L
@@ -122,9 +120,23 @@ void aloca_estruturas (void) {
     // Inicializa o vetor alinhado L com os valores da matrix inferior
     for (i = 0; i < N; i++ ) {
         for (j = 0; j < i; j++) {
-            L[m_index(i,j)] = L_aux[i*N+j];
+            L[index(i,j)] = L_aux[i*N+j];
         }
     }
+
+    // Inicializa o vetor alinhado U com os valores da matrix superior
+    for (i = 0; i < N; ++i) {
+        for (j = i; j < N; ++j) {
+            U[uindex(i,j,N)] = U_aux[i*N+j];
+        }
+    }
+    // for (i=N-1; i >=0 ; i--) {
+    //     for (j = N-1; j >= i; --j) {
+    //         U[uindex(i,j)] = U_aux[i*N+j];
+    //         printf("%g ", U[uindex(i,j)]);
+    //     }
+    //     printf("\n");
+    // }
 }
 
 /**
@@ -132,13 +144,12 @@ void aloca_estruturas (void) {
  *
  */
 void forward_subs (double *L, double *z, double *R, int iter) {
-	double soma;
-	soma = 0.0;
+	double soma = 0.0;
     for (k = 0; k < N; ++k) {
-       soma = R[row[iter]*N+k];
+       soma = R[iter*N+k];
 
        for (j = 0; j < k; ++j) {
-          soma = soma - L[m_index(k,j)]*z[j];
+          soma = soma - L[index(k,j)]*z[j];
        }
        z[k] = soma;
     }
@@ -151,15 +162,15 @@ void forward_subs (double *L, double *z, double *R, int iter) {
 void backward_subs (double *U, double *x, double *z, int iter) {
 	double soma = 0.0;
 	//Backward Ux = z
-	x[N-1] = z[N-1] / U[(N*N)-1];
+	x[N-1] = z[N-1] / U[uindex(N-1,N-1,N)];
 	for (k = N-2; k >= 0; --k)
 	{
 		soma = z[k];
-		for (j = k + 1; j < N; ++j)
+		for (j = N-1; j > k; --j)
 		{
-			soma = soma - U[k*N+j] * x[j];
+			soma = soma - U[uindex(k,j,N)] * x[j];
 		}
-		x[k] = soma / U[k*N + k];
+		x[k] = soma / U[uindex(k,k,N)];
 	}
 }
 
@@ -170,7 +181,7 @@ void backward_subs (double *U, double *x, double *z, int iter) {
 int main(int argc, char const *argv[])
 {
 	srand( 20162 );
-	double aux, soma;
+	double soma;
 	int opt[2];
 	char	*input_name, 			/**< String para nome do arquivo de input*/
 			*output_name;			/**< String para nome do arquivo de output */
@@ -204,36 +215,33 @@ int main(int argc, char const *argv[])
 
 	aloca_estruturas();
 
-	for (i = 0; i < N; ++i)
-		row[i] = i; // < Inicializa vetor de indices
-
-
 	// temp_begin = timestamp();
 	// lu_decomposition();
-    lu_decomposition();
-    print_matriz(L_aux, N);
-    print_matriz(U_aux, N);
-
-	// temp_end = timestamp();
-	// temp_lu = temp_end - temp_begin;
-    for  (i = 0; i < lower_tam; i++)
-        printf("%g ", L[i]);
-    exit(1);
     for (i = 0; i < N; ++i) {
         for (j = 0; j < N; ++j) {
             I[i*N+j] = (j == i) ? 1.0 : 0.0;
-            R[row[i]*N+j] = I[i*N+j];
+            R[i*N+j] = I[i*N+j];
         }
     }
-    // for (i = 0; i < N; ++i) {
-    //     for (j = 0; j < N; j++) {
-    //         printf("%g ", R[row[i]*N+j]);
-    //     }
-    //     printf("\n");
-    // }
+    lu_decomposition();
+    // printf("Laux\n");
+    // print_matriz(L_aux, N);
+    // printf("Uaux\n");
+    // print_matriz(U_aux, N);
+
+    // for (i = 0; i < lower_size; i++)
+    //     printf("%g ", L[i]);
+    // puts("\n");
+    for (i = 0; i < upper_size; i++)
+        printf("index: %d  %g ", i, U[i]);
+    puts("\n");
+	// temp_end = timestamp();
+	// temp_lu = temp_end - temp_begin;
+
+
     temp_begin = timestamp();
 	for (i = 0; i < N; i++) { //Resolve N sistemas lineares para as Xn colunas de AI
-		forward_subs(L, z, I, i);
+		forward_subs(L, z, R, i);
 		backward_subs(U, x, z, i);
 		for ( k = 0; k < N; ++k)
 		{
@@ -259,7 +267,7 @@ int main(int argc, char const *argv[])
 		//Calculo matriz residuos REFINAMENTO
 		for (i = 0; i < N; ++i) {
 			for (j = 0; j < N; ++j) {
-                R[row[i]*N+j] = I[i*N+j] - A_AI[i*N+j];
+                R[i*N+j] = I[i*N+j] - A_AI[i*N+j];
 			}
 		}
 
@@ -268,7 +276,7 @@ int main(int argc, char const *argv[])
 		temp_begin = timestamp();
 		for (i = 0; i < N; ++i) {
 			for (j = 0; j < N; ++j) {
-				soma += R[row[i]*N+j] * R[row[i]*N+j];
+				soma += R[i*N+j] * R[i*N+j];
 			}
 		}
 
