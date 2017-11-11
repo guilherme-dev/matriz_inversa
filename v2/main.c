@@ -105,10 +105,10 @@ void aloca_estruturas (void) {
  * Efetua a forward substitution para resolver Lz = R, onde R(0) = I.
  *
  */
-void forward_subs (double *L, double *z, double *R, int iter) {
+inline void forward_subs (double *L, double *z, double *R, int i) {
 	double soma = 0.0;
     for (k = 0; k < N; ++k) {
-       soma = R[iter*N+k];
+       soma = R[i*N+k];
 
        for (j = 0; j < k; ++j) {
           soma = soma - L[index(k,j)]*z[j];
@@ -121,7 +121,7 @@ void forward_subs (double *L, double *z, double *R, int iter) {
  * Efetua backward substitution para resolver Ux = z;
  *
  */
-void backward_subs (double *U, double *x, double *z, int iter) {
+inline void backward_subs (double *U, double *x, double *z) {
 	double soma = 0.0;
 	//Backward Ux = z
 	x[N-1] = z[N-1] / U[uindex(N-1,N-1,N)];
@@ -145,7 +145,7 @@ int main(int argc, char const *argv[])
 	srand( 20162 );
 	double soma;
 	int opt[2];
-    int align_AI, align_A;
+    int align_AI, align_A, align_R, align_L, align_U;
 	char	*input_name, 			/**< String para nome do arquivo de input*/
 			*output_name;			/**< String para nome do arquivo de output */
 	FILE	*input_f,				/**< Arquivo entrada */
@@ -163,17 +163,29 @@ int main(int argc, char const *argv[])
 
 		fscanf(input_f, "%d", &N);
 
-		align_A = posix_memalign((void**)&A, 32, sizeof(double) * N * N);
+		align_A = posix_memalign((void**)&A, 32, N * N * sizeof(double));
 		for (i = 0; i < N * N; i++) {
 			fscanf(input_f, "%lf", &A[i]);
 		}
 	} else {
-		align_A = posix_memalign((void**)&A, 32, sizeof(double) * N * N);
+		align_A = posix_memalign((void**)&A, 32, N * N * sizeof(double));
 		A = generateSquareRandomMatrix(N);
 	}
 
 
-    align_AI = posix_memalign((void**)&AI, 32, sizeof(double) * N * N);
+    align_AI = posix_memalign((void**)&AI, 32, N * N * sizeof(double));
+    align_R = posix_memalign((void**)&R, 32, N * N * sizeof(double));
+    align_L = posix_memalign((void**)&L, 64, lower_size * sizeof(double));
+    align_U = posix_memalign((void**)&U, 64, upper_size * sizeof(double));
+
+    if (align_AI || align_A || align_R || align_L || align_U) {
+        printf("Erro ao alocar memoria alinhada\n");
+        exit(-1);
+    }
+
+    A = (double *)  __builtin_assume_aligned(A, 32);
+    AI = (double *)  __builtin_assume_aligned(AI, 32);
+    R = (double *)  __builtin_assume_aligned(R, 32);
 
     if (! (r = (double *) malloc (max_iter * sizeof(double))) )
         exit(-1);
@@ -181,17 +193,11 @@ int main(int argc, char const *argv[])
         exit(-1);
     if (! (x = (double *) malloc (N * sizeof(double))) )
         exit(-1);
-    if (! (L = (double *) malloc (lower_size * sizeof(double))) )
-        exit(-1);
-    if (! (U = (double *) malloc (upper_size * sizeof(double))) )
-        exit(-1);
     if (! (L_aux = (double *) malloc (N * N * sizeof(double))) )
         exit(-1);
     if (! (U_aux = (double *) malloc (N * N * sizeof(double))) )
         exit(-1);
     if (! (W = (double *) malloc (N * N * sizeof(double))) )
-        exit(-1);
-    if (! (R = (double *) malloc (N * N * sizeof(double))) )
         exit(-1);
 
 
@@ -204,10 +210,15 @@ int main(int argc, char const *argv[])
 
     lu_decomposition();
 
-    t_begin = timestamp();
+    LIKWID_MARKER_INIT;
 	for (i = 0; i < N; i++) { //Resolve N sistemas lineares para as Xn colunas de AI
+        t_begin = timestamp();
+        LIKWID_MARKER_START("op1");
 		forward_subs(L, z, R, i);
-		backward_subs(U, x, z, i);
+		backward_subs(U, x, z);
+        LIKWID_MARKER_STOP("op1");
+        t_end = timestamp();
+        t_op1 += t_end - t_begin;
 		for ( k = 0; k < N; ++k)
 		{
 			AI[i*N+k] = x[k];
@@ -216,12 +227,9 @@ int main(int argc, char const *argv[])
 	t_end = timestamp();
 
 	//INICIO REFINAMENTO SUCESSIVO
-    LIKWID_MARKER_INIT;
 	for (l = 0; l < max_iter; ++l) {
+        t_begin = timestamp();
         LIKWID_MARKER_START("op2");
-
-        A = (double *)  __builtin_assume_aligned(A, 32);
-        AI = (double *)  __builtin_assume_aligned(AI, 32);
         for (i = 0; i < N; i++) {
 			for (j = 0; j < N; j++) {
 				soma = 0.0;
@@ -232,6 +240,8 @@ int main(int argc, char const *argv[])
 			}
 		}
         LIKWID_MARKER_STOP("op2");
+        t_end = timestamp();
+        t_op2 += t_end - t_begin;
 		// NORMA DO RESIDUO
 		soma = 0.0;
 		t_begin = timestamp();
@@ -242,13 +252,16 @@ int main(int argc, char const *argv[])
 		}
 
 		r[l] = fabs(sqrt(soma));
-		t_end = timestamp();
-		t_begin = timestamp();
 
         // LIKWID_MARKER_START("mult_matrix");
 		for (i = 0; i < N; ++i) {
+            t_begin = timestamp();
+            LIKWID_MARKER_START("op1");
 			forward_subs(L, z, R, i);
-			backward_subs(U, x, z, i);
+			backward_subs(U, x, z);
+            LIKWID_MARKER_STOP("op1");
+            t_end = timestamp();
+            t_op1 += t_end - t_begin;
 			for ( k = 0; k < N; ++k)
 			{
 				W[i*N+k] = x[k];

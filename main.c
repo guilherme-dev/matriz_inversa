@@ -200,9 +200,7 @@ int main(int argc, char const *argv[])
 
 	// temp_begin = timestamp();
 	lu_decomposition();
-    print_matriz(L, N);
-    printf("\n");
-    print_matriz(U, N);
+
 
 	// temp_end = timestamp();
 	// temp_lu = temp_end - temp_begin;
@@ -215,25 +213,14 @@ int main(int argc, char const *argv[])
 		}
 	}
 
-    // for (i = 0; i < N; ++i) {
-    //     for (j = 0; j < N; j++) {
-    //         printf("%g ", R[row[i]*N+j]);
-    //     }
-    //     printf("\n");
-    // }
-
     t_op1 = t_op2 = 0.0;
     LIKWID_MARKER_INIT;
 	for (i = 0; i < N; i++) { //Resolve N sistemas lineares para as Xn colunas de AI
         temp_begin = timestamp();
-        // LIKWID_MARKER_START("op1");
+        LIKWID_MARKER_START("op1");
 		forward_subs(L, z, I, i);
-        // for (k = 0; k < N; k++) {
-        //     printf("%g ", z[k]);
-        // }
-        // exit(1);
 		backward_subs(U, x, z, i);
-        // LIKWID_MARKER_STOP("op1");
+        LIKWID_MARKER_STOP("op1");
         temp_end = timestamp();
         t_op1 += temp_end - temp_begin;
 		for ( k = 0; k < N; ++k)

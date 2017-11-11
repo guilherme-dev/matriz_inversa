@@ -159,6 +159,5 @@ void gerar_saida (FILE *output_f) {
 		}
 		fprintf(output_f, "\n");
 	}
-    printf("Chegou no printf\n");
     printf("t_op1 %g\nt_op2 %g\n", t_op1, t_op2);
 }
