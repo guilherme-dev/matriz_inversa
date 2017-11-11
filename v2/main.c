@@ -143,14 +143,19 @@ inline void backward_subs (double *U, double *x, double *z) {
 int main(int argc, char const *argv[])
 {
 	srand( 20162 );
-	double soma;
 	int opt[2];
-    int align_AI, align_A, align_R, align_L, align_U;
-	char	*input_name, 			/**< String para nome do arquivo de input*/
+    char	*input_name, 			/**< String para nome do arquivo de input*/
 			*output_name;			/**< String para nome do arquivo de output */
 	FILE	*input_f,				/**< Arquivo entrada */
 			*output_f;				/**< Arquivo saida */
     input_name = output_name = NULL;
+
+
+    int align_AI, align_A, align_R, align_L, align_U;
+    int ii, jj, kk, B = 100;
+    double soma;
+
+
 
 
 	processa_argumentos(argc, argv, &N, &max_iter, A, opt);
@@ -230,15 +235,21 @@ int main(int argc, char const *argv[])
 	for (l = 0; l < max_iter; ++l) {
         t_begin = timestamp();
         LIKWID_MARKER_START("op2");
-        for (i = 0; i < N; i++) {
-			for (j = 0; j < N; j++) {
-				soma = 0.0;
-				for (k = 0; k < N; k++) {
-					soma += A[i*N+k] * AI[j*N+k];
-				}
-                R[i*N+j] = (i == j) ? 1 - soma: 0 - soma;
-			}
-		}
+        for (ii = 0; ii < N; ii+=B) {
+            for (jj = 0; jj < N; jj+=B) {
+                for (kk = 0; kk < N; kk+=B) {
+                    for (i = ii; i < MIN(N, ii + B-1); i++) {
+                    	for (j = jj; j < MIN(N, jj + B-1); j++) {
+                    		soma = 0.0;
+                    		for (k = kk; k < MIN(N, kk + B-1); k++) {
+                    			soma += A[i*N+k] * AI[j*N+k];
+                    		}
+                            R[i*N+j] = (i == j) ? 1 - soma: 0 - soma;
+                    	}
+                    }
+                }
+            }
+        }
         LIKWID_MARKER_STOP("op2");
         t_end = timestamp();
         t_op2 += t_end - t_begin;
