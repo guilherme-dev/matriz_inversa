@@ -118,19 +118,21 @@ void print_matriz(double *A, int n) {
  *
  */
 void gerar_saida (FILE *output_f) {
-	for (i = 0; i < max_iter && r[i] >= 0; ++i) {
-		fprintf(output_f, "# iter %d: ||%.17g||\n", i+1, r[i]);
-	}
-	fprintf(output_f, "#\n");
-    #ifdef TESTE
-        if (N > 100)
-            return;
-    #endif
-	for (i = 0; i < N; i++) {
-		for (j = 0; j < N; j++) {
-			fprintf(output_f, "%g ", AI[i+N*j]);
-		}
-		fprintf(output_f, "\n");
-	}
+	// for (i = 0; i < max_iter && r[i] >= 0; ++i) {
+	// 	fprintf(output_f, "# iter %d: ||%.17g||\n", i+1, r[i]);
+	// }
+	// fprintf(output_f, "#\n");
+    // #ifdef TESTE
+    //     if (N > 100)
+    //         return;
+    // #endif
+	if (N < 100) {
+        for (i = 0; i < N; i++) {
+    		for (j = 0; j < N; j++) {
+    			fprintf(output_f, "%g ", AI[i+N*j]);
+    		}
+    		fprintf(output_f, "\n");
+    	}
+    }
     printf("t_op1 %g\nt_op2 %g\n", t_op1, t_op2);
 }

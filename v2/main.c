@@ -151,8 +151,9 @@ int main(int argc, char const *argv[])
     input_name = output_name = NULL;
 
 
+
     int align_AI, align_A, align_R, align_L, align_U;
-    int ii, jj, kk, B = 100;
+    int ii, jj, kk;
     double soma;
 
 
@@ -167,7 +168,6 @@ int main(int argc, char const *argv[])
 		input_f = fopen(input_name, "r");
 
 		fscanf(input_f, "%d", &N);
-
 		align_A = posix_memalign((void**)&A, 32, N * N * sizeof(double));
 		for (i = 0; i < N * N; i++) {
 			fscanf(input_f, "%lf", &A[i]);
@@ -214,27 +214,27 @@ int main(int argc, char const *argv[])
     }
 
     lu_decomposition();
-
+    t_op1 = t_op2 = 0.0;
     LIKWID_MARKER_INIT;
 	for (i = 0; i < N; i++) { //Resolve N sistemas lineares para as Xn colunas de AI
-        t_begin = timestamp();
         LIKWID_MARKER_START("op1");
+        t_begin = timestamp();
 		forward_subs(L, z, R, i);
 		backward_subs(U, x, z);
-        LIKWID_MARKER_STOP("op1");
         t_end = timestamp();
-        t_op1 += t_end - t_begin;
+        LIKWID_MARKER_STOP("op1");
+        t_op1 = t_op1 + (t_end - t_begin);
 		for ( k = 0; k < N; ++k)
 		{
 			AI[i*N+k] = x[k];
 		}
 	}
-	t_end = timestamp();
 
 	//INICIO REFINAMENTO SUCESSIVO
+    // B = 100
 	for (l = 0; l < max_iter; ++l) {
-        t_begin = timestamp();
         LIKWID_MARKER_START("op2");
+        t_begin = timestamp();
         for (ii = 0; ii < N; ii+=B) {
             for (jj = 0; jj < N; jj+=B) {
                 for (kk = 0; kk < N; kk+=B) {
@@ -250,12 +250,11 @@ int main(int argc, char const *argv[])
                 }
             }
         }
-        LIKWID_MARKER_STOP("op2");
         t_end = timestamp();
+        LIKWID_MARKER_STOP("op2");
         t_op2 += t_end - t_begin;
 		// NORMA DO RESIDUO
 		soma = 0.0;
-		t_begin = timestamp();
 		for (i = 0; i < N; ++i) {
 			for (j = 0; j < N; ++j) {
 				soma += R[i*N+j] * R[i*N+j];
@@ -272,7 +271,7 @@ int main(int argc, char const *argv[])
 			backward_subs(U, x, z);
             LIKWID_MARKER_STOP("op1");
             t_end = timestamp();
-            t_op1 += t_end - t_begin;
+            t_op1 = t_op1 + (t_end - t_begin);
 			for ( k = 0; k < N; ++k)
 			{
 				W[i*N+k] = x[k];
@@ -285,7 +284,6 @@ int main(int argc, char const *argv[])
 		for (i = 0; i < N * N; ++i) {
 			AI[i] += W[i];
 		}
-		t_end = timestamp();
 	}
     LIKWID_MARKER_CLOSE;
 	if (opt[1]) {
@@ -293,9 +291,11 @@ int main(int argc, char const *argv[])
 		output_name = malloc(sizeof(char) * strlen(argv[i]));
 		strcpy(output_name, argv[i]);
 		output_f = fopen(output_name, "wr");
+        printf("V2222\n");
         gerar_saida(output_f);
 		fclose(output_f);
 	} else {
+        printf("V2222\n");
 		gerar_saida(stdout);
 	}
 	if (opt[0])
@@ -303,9 +303,13 @@ int main(int argc, char const *argv[])
     printf("Fim!\n");
 	free(A);
 	free(AI);
+    free(R);
+    free(r);
 	free(W);
 	free(L);
-	free(U);
+    free(U);
+	free(L_aux);
+	free(U_aux);
 	free(x);
 	free(z);
 

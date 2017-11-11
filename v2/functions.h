@@ -34,6 +34,9 @@
 #define upper_size (size(N))
 
 #define MIN(a,b) ((a < b) ? (a) : (b))
+// TAMANHO DO BLOCO /////
+#define B 100
+#define LIN 4
 
 int N,  					/**< Dimensão da Matriz A (Ax = b) */
 	max_iter,				/**< Quantidade máxima de iterações */
