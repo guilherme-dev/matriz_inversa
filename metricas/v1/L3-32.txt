@@ -1,0 +1,152 @@
+--------------------------------------------------------------------------------
+CPU name:	Intel(R) Core(TM) i7-3610QM CPU @ 2.30GHz
+CPU type:	Intel Core IvyBridge processor
+CPU clock:	2.29 GHz
+--------------------------------------------------------------------------------
+Chegou no printf
+t_op1 85.562
+t_op2 2.94775
+Fim!
+--------------------------------------------------------------------------------
+Region op1, Group 1: L3
++-------------------+----------+
+|    Region Info    |  Core 1  |
++-------------------+----------+
+| RDTSC Runtime [s] | 0.001092 |
+|     call count    |      352 |
++-------------------+----------+
+
++------------------------+---------+---------+
+|          Event         | Counter |  Core 1 |
++------------------------+---------+---------+
+|    INSTR_RETIRED_ANY   |  FIXC0  | 3699155 |
+|  CPU_CLK_UNHALTED_CORE |  FIXC1  | 5321758 |
+|  CPU_CLK_UNHALTED_REF  |  FIXC2  | 7999883 |
+|     L2_LINES_IN_ALL    |   PMC0  |  121613 |
+| L2_LINES_OUT_DIRTY_ALL |   PMC1  |    6716 |
++------------------------+---------+---------+
+
++-------------------------------+-----------+
+|             Metric            |   Core 1  |
++-------------------------------+-----------+
+|      Runtime (RDTSC) [s]      |    0.0011 |
+|      Runtime unhalted [s]     |    0.0023 |
+|          Clock [MHz]          | 1526.5542 |
+|              CPI              |    1.4386 |
+|  L3 load bandwidth [MBytes/s] | 7130.3683 |
+|  L3 load data volume [GBytes] |    0.0078 |
+| L3 evict bandwidth [MBytes/s] |  393.7700 |
+| L3 evict data volume [GBytes] |    0.0004 |
+|    L3 bandwidth [MBytes/s]    | 7524.1384 |
+|    L3 data volume [GBytes]    |    0.0082 |
++-------------------------------+-----------+
+
+Region op2, Group 1: L3
++-------------------+----------+
+|    Region Info    |  Core 1  |
++-------------------+----------+
+| RDTSC Runtime [s] | 0.000548 |
+|     call count    |       10 |
++-------------------+----------+
+
++------------------------+---------+---------+
+|          Event         | Counter |  Core 1 |
++------------------------+---------+---------+
+|    INSTR_RETIRED_ANY   |  FIXC0  | 2210447 |
+|  CPU_CLK_UNHALTED_CORE |  FIXC1  |  938550 |
+|  CPU_CLK_UNHALTED_REF  |  FIXC2  | 1408313 |
+|     L2_LINES_IN_ALL    |   PMC0  |    9462 |
+| L2_LINES_OUT_DIRTY_ALL |   PMC1  |     675 |
++------------------------+---------+---------+
+
++-------------------------------+--------------+
+|             Metric            |    Core 1    |
++-------------------------------+--------------+
+|      Runtime (RDTSC) [s]      |       0.0005 |
+|      Runtime unhalted [s]     |       0.0004 |
+|          Clock [MHz]          |    1529.3221 |
+|              CPI              |       0.4246 |
+|  L3 load bandwidth [MBytes/s] |    1105.2326 |
+|  L3 load data volume [GBytes] |       0.0006 |
+| L3 evict bandwidth [MBytes/s] |      78.8451 |
+| L3 evict data volume [GBytes] | 4.320000e-05 |
+|    L3 bandwidth [MBytes/s]    |    1184.0777 |
+|    L3 data volume [GBytes]    |       0.0006 |
++-------------------------------+--------------+
+
+--------------------------------------------------------------------------------
+CPU name:	Intel(R) Core(TM) i7-3610QM CPU @ 2.30GHz
+CPU type:	Intel Core IvyBridge processor
+CPU clock:	2.29 GHz
+--------------------------------------------------------------------------------
+Chegou no printf
+t_op1 84.8127
+t_op2 2.97119
+Fim!
+--------------------------------------------------------------------------------
+Region op1, Group 1: L3
++-------------------+----------+
+|    Region Info    |  Core 1  |
++-------------------+----------+
+| RDTSC Runtime [s] | 0.001096 |
+|     call count    |      352 |
++-------------------+----------+
+
++------------------------+---------+---------+
+|          Event         | Counter |  Core 1 |
++------------------------+---------+---------+
+|    INSTR_RETIRED_ANY   |  FIXC0  | 3704790 |
+|  CPU_CLK_UNHALTED_CORE |  FIXC1  | 5319539 |
+|  CPU_CLK_UNHALTED_REF  |  FIXC2  | 7961519 |
+|     L2_LINES_IN_ALL    |   PMC0  |  126281 |
+| L2_LINES_OUT_DIRTY_ALL |   PMC1  |    7032 |
++------------------------+---------+---------+
+
++-------------------------------+-----------+
+|             Metric            |   Core 1  |
++-------------------------------+-----------+
+|      Runtime (RDTSC) [s]      |    0.0011 |
+|      Runtime unhalted [s]     |    0.0023 |
+|          Clock [MHz]          | 1533.2710 |
+|              CPI              |    1.4359 |
+|  L3 load bandwidth [MBytes/s] | 7371.3491 |
+|  L3 load data volume [GBytes] |    0.0081 |
+| L3 evict bandwidth [MBytes/s] |  410.4761 |
+| L3 evict data volume [GBytes] |    0.0005 |
+|    L3 bandwidth [MBytes/s]    | 7781.8251 |
+|    L3 data volume [GBytes]    |    0.0085 |
++-------------------------------+-----------+
+
+Region op2, Group 1: L3
++-------------------+----------+
+|    Region Info    |  Core 1  |
++-------------------+----------+
+| RDTSC Runtime [s] | 0.000568 |
+|     call count    |       10 |
++-------------------+----------+
+
++------------------------+---------+---------+
+|          Event         | Counter |  Core 1 |
++------------------------+---------+---------+
+|    INSTR_RETIRED_ANY   |  FIXC0  | 2210609 |
+|  CPU_CLK_UNHALTED_CORE |  FIXC1  |  943146 |
+|  CPU_CLK_UNHALTED_REF  |  FIXC2  | 1416616 |
+|     L2_LINES_IN_ALL    |   PMC0  |    9615 |
+| L2_LINES_OUT_DIRTY_ALL |   PMC1  |     955 |
++------------------------+---------+---------+
+
++-------------------------------+-----------+
+|             Metric            |   Core 1  |
++-------------------------------+-----------+
+|      Runtime (RDTSC) [s]      |    0.0006 |
+|      Runtime unhalted [s]     |    0.0004 |
+|          Clock [MHz]          | 1527.8040 |
+|              CPI              |    0.4266 |
+|  L3 load bandwidth [MBytes/s] | 1083.9159 |
+|  L3 load data volume [GBytes] |    0.0006 |
+| L3 evict bandwidth [MBytes/s] |  107.6588 |
+| L3 evict data volume [GBytes] |    0.0001 |
+|    L3 bandwidth [MBytes/s]    | 1191.5748 |
+|    L3 data volume [GBytes]    |    0.0007 |
++-------------------------------+-----------+
+
