@@ -105,7 +105,7 @@ void aloca_estruturas (void) {
  * Efetua a forward substitution para resolver Lz = R, onde R(0) = I.
  *
  */
-inline void forward_subs (double *L, double *z, double *R, int i) {
+void inline forward_subs (double *L, double *z, double *R, int i) {
 	double soma = 0.0;
     for (k = 0; k < N; ++k) {
        soma = R[i*N+k];
@@ -121,7 +121,7 @@ inline void forward_subs (double *L, double *z, double *R, int i) {
  * Efetua backward substitution para resolver Ux = z;
  *
  */
-inline void backward_subs (double *U, double *x, double *z) {
+void inline backward_subs (double *U, double *x, double *z) {
 	double soma = 0.0;
 	//Backward Ux = z
 	x[N-1] = z[N-1] / U[uindex(N-1,N-1,N)];
@@ -143,7 +143,7 @@ inline void backward_subs (double *U, double *x, double *z) {
 int main(int argc, char const *argv[])
 {
 	srand( 20162 );
-	int opt[2];
+	int opt[2], size;
     char	*input_name, 			/**< String para nome do arquivo de input*/
 			*output_name;			/**< String para nome do arquivo de output */
 	FILE	*input_f,				/**< Arquivo entrada */
@@ -153,7 +153,8 @@ int main(int argc, char const *argv[])
 
 
     int align_AI, align_A, align_R, align_L, align_U;
-    double soma;
+    int B;
+    double soma, soma_v[0];
 
 
 
@@ -236,11 +237,41 @@ int main(int argc, char const *argv[])
 	}
 
 	//INICIO REFINAMENTO SUCESSIVO
+    size = N - (N % 4);
 	for (l = 0; l < max_iter; ++l) {
         LIKWID_MARKER_START("op2");
         t_begin = timestamp();
+        // for (i = 0; i < N; i++) {
+		// 	for (j = 0; j < N; j++) {
+		// 		soma = 0.0;
+		// 		for (k = 0; k < N; k++) {
+		// 			soma += A[i*N+k] * AI[j*N+k];
+		// 		}
+		// 		R[i*N+j] = (i == j) ? 1 - soma: 0 - soma;
+		// 	}
+		// }
+
         for (i = 0; i < N; i++) {
-			for (j = 0; j < N; j++) {
+			for (j = 0; j < size; ++j) {
+				soma_v[0] = 0.0;
+				soma_v[1] = 0.0;
+				soma_v[2] = 0.0;
+				soma_v[3] = 0.0;
+				for (k = 0; k < N; k++) {
+					soma_v[0] += A[i*N+k] * AI[j*N+k];
+					soma_v[1] += A[i*N+k] * AI[(j+1)*N+k];
+					soma_v[2] += A[i*N+k] * AI[(j+2)*N+k];
+					soma_v[3] += A[i*N+k] * AI[(j+3)*N+k];
+				}
+				R[i*N+j] = (i == j) ? 1 - soma_v[0]: 0 - soma_v[0];
+				R[i*N+j+1] = (i == j+1) ? 1 - soma_v[1]: 0 - soma_v[1];
+				R[i*N+j+2] = (i == j+2) ? 1 - soma_v[2]: 0 - soma_v[2];
+				R[i*N+j+3] = (i == j+3) ? 1 - soma_v[3]: 0 - soma_v[3];
+			}
+		}
+        //Remainder
+        for (i = 0; i < N; i++) {
+			for (j = size; j < N; j++) {
 				soma = 0.0;
 				for (k = 0; k < N; k++) {
 					soma += A[i*N+k] * AI[j*N+k];
@@ -248,6 +279,7 @@ int main(int argc, char const *argv[])
 				R[i*N+j] = (i == j) ? 1 - soma: 0 - soma;
 			}
 		}
+
         t_end = timestamp();
         LIKWID_MARKER_STOP("op2");
         t_op2 += t_end - t_begin;
