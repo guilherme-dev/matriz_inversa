@@ -118,9 +118,9 @@ void print_matriz(double *A, int n) {
  *
  */
 void gerar_saida (FILE *output_f) {
-	// for (i = 0; i < max_iter && r[i] >= 0; ++i) {
-	// 	fprintf(output_f, "# iter %d: ||%.17g||\n", i+1, r[i]);
-	// }
+	for (i = 0; i < max_iter && r[i] >= 0; ++i) {
+		fprintf(output_f, "# iter %d: ||%.17g||\n", i+1, r[i]);
+	}
 	// fprintf(output_f, "#\n");
     // #ifdef TESTE
     //     if (N > 100)

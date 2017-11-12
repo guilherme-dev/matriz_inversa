@@ -153,7 +153,8 @@ int main(int argc, char const *argv[])
 
 
     int align_AI, align_A, align_R, align_L, align_U;
-    int ii, jj, kk;
+    int ii, jj, kk, B, size;
+    int istart, iend, jstart, jend, kstart, kend;
     double soma;
 
 
@@ -231,25 +232,62 @@ int main(int argc, char const *argv[])
 	}
 
 	//INICIO REFINAMENTO SUCESSIVO
-    // B = 100
+    B = 100;
+    size = N - (N % 100);
 	for (l = 0; l < max_iter; ++l) {
         LIKWID_MARKER_START("op2");
         t_begin = timestamp();
-        for (ii = 0; ii < N; ii+=B) {
-            for (jj = 0; jj < N; jj+=B) {
-                for (kk = 0; kk < N; kk+=B) {
-                    for (i = ii; i < MIN(N, ii + B-1); i++) {
-                    	for (j = jj; j < MIN(N, jj + B-1); j++) {
-                    		soma = 0.0;
-                    		for (k = kk; k < MIN(N, kk + B-1); k++) {
-                    			soma += A[i*N+k] * AI[j*N+k];
-                    		}
-                            R[i*N+j] = (i == j) ? 1 - soma: 0 - soma;
-                    	}
-                    }
-                }
-            }
-        }
+        // for (i = 0; i < N; i++) {
+		// 	for (j = 0; j < N; j++) {
+		// 		soma = 0.0;
+		// 		for (k = 0; k < N; k++) {
+		// 			soma += A[i*N+k] * AI[j*N+k];
+		// 		}
+		// 		R[i*N+j] = (i == j) ? 1 - soma: 0 - soma;
+		// 	}
+		// }
+
+        // for (i = 0; i < N * N; ++i) {
+        //     R[i] = 0.0;
+        // }
+        // for (ii = 0; ii < N; ii+= B) {
+        //     istart = ii;
+        //     iend = (N < ii+B-1) ? N : ii+B-1;
+        //     for (jj = 0; jj < N; jj+= B) {
+        //         jstart = jj;
+        //         jend = (N < jj+B-1) ? N : jj+B-1;
+        //
+        //             for (i = istart; i < iend; ++i) {
+        //                 for (j = jstart; j < jend; ++j) {
+        //                     soma = 0.0;
+        //                     for (k = 0; k < N; ++k){
+        //                         soma += A[i*N+k] * AI[j*N+k];
+        //                     }
+        //                     R[i*N+j] = (i == j) ? 1 - soma: 0 - soma;
+        //                 }
+        //             }
+        //     }
+        // }
+        // for (i = 0; i < N * N; ++i) {
+        //     R[i] = 0.0;
+        // }
+        // for (ii = 0; ii < N; ii+=B) {
+        //    for (jj = 0; jj < N; jj+=B) {
+        //        for (kk = 0; kk < N; kk+=B) {
+        //            for (i = ii; i < MIN(N, ii + B-1); i++) {
+        //                for (j = jj; j < MIN(N, jj + B-1); j++) {
+        //                    soma = 0.0;
+        //                    for (k = kk; k < MIN(N, kk + B-1); k++) {
+        //                        soma += A[i*N+k] * AI[j*N+k];
+        //                    }
+        //                    R[i*N+j] += (i == j) ? 1 - soma: 0 - soma;
+        //                }
+        //            }
+        //        }
+        //    }
+        // }
+
+
         t_end = timestamp();
         LIKWID_MARKER_STOP("op2");
         t_op2 += t_end - t_begin;
