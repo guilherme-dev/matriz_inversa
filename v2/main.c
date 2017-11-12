@@ -235,21 +235,18 @@ int main(int argc, char const *argv[])
 	for (l = 0; l < max_iter; ++l) {
         t_begin = timestamp();
         LIKWID_MARKER_START("op2");
-        for (ii = 0; ii < N; ii+=B) {
-            for (jj = 0; jj < N; jj+=B) {
-                for (kk = 0; kk < N; kk+=B) {
-                    for (i = ii; i < MIN(N, ii + B-1); i++) {
-                    	for (j = jj; j < MIN(N, jj + B-1); j++) {
-                    		soma = 0.0;
-                    		for (k = kk; k < MIN(N, kk + B-1); k++) {
-                    			soma += A[i*N+k] * AI[j*N+k];
-                    		}
-                            R[i*N+j] = (i == j) ? 1 - soma: 0 - soma;
-                    	}
-                    }
-                }
-            }
-        }
+        for (i = 0; i < N; i++) {
+			for (j = 0; j < N; j++) {
+				soma = 0.0;
+				for (k = 0; k < N; k++) {
+					soma += A[i*N+k] * AI[k+N*j];
+				}
+				R[i*N+j] = (i == j) ? 1 - soma: 0 - soma;
+			}
+		}
+
+		//Calculo matriz residuos REFINAMENTO
+
         LIKWID_MARKER_STOP("op2");
         t_end = timestamp();
         t_op2 += t_end - t_begin;
