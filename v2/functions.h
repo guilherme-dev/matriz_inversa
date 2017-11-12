@@ -33,8 +33,6 @@
 #define lower_size (size(N) - (N))
 #define upper_size (size(N))
 
-#define MIN(a,b) ((a < b) ? (a) : (b))
-
 int N,  					/**< Dimensão da Matriz A (Ax = b) */
 	max_iter,				/**< Quantidade máxima de iterações */
 	*row, 					/**< vetor de dimensão N. Serve como vetor de índices para auxílio nas trocas de linhas */
