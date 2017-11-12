@@ -1,6 +1,6 @@
 set logscale y
 set key right bottom
-set title "Teste de tempo"
+set title "Cache Miss L2"
 set xlabel "Tamanho da matriz (N)"
-set ylabel "Tempo (ms)"
+set ylabel "L2 miss ratio"
 set xtic auto
