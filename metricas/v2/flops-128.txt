@@ -3,71 +3,72 @@ CPU name:	Intel(R) Core(TM) i7-3610QM CPU @ 2.30GHz
 CPU type:	Intel Core IvyBridge processor
 CPU clock:	2.29 GHz
 --------------------------------------------------------------------------------
-t_op1 218.06
-t_op2 10.8423
+V2222
+t_op1 232.41
+t_op2 6.20117
 Fim!
 --------------------------------------------------------------------------------
 Region op1, Group 1: FLOPS_DP
 +-------------------+----------+
 |    Region Info    |  Core 1  |
 +-------------------+----------+
-| RDTSC Runtime [s] | 0.017423 |
+| RDTSC Runtime [s] | 0.018717 |
 |     call count    |     1408 |
 +-------------------+----------+
 
 +--------------------------------------+---------+----------+
 |                 Event                | Counter |  Core 1  |
 +--------------------------------------+---------+----------+
-|           INSTR_RETIRED_ANY          |  FIXC0  | 96361800 |
-|         CPU_CLK_UNHALTED_CORE        |  FIXC1  | 58276120 |
-|         CPU_CLK_UNHALTED_REF         |  FIXC2  | 55390420 |
+|           INSTR_RETIRED_ANY          |  FIXC0  | 95934800 |
+|         CPU_CLK_UNHALTED_CORE        |  FIXC1  | 58242320 |
+|         CPU_CLK_UNHALTED_REF         |  FIXC2  | 59194890 |
 | FP_COMP_OPS_EXE_SSE_FP_PACKED_DOUBLE |   PMC0  |        0 |
-| FP_COMP_OPS_EXE_SSE_FP_SCALAR_DOUBLE |   PMC1  |  2871735 |
-|       SIMD_FP_256_PACKED_DOUBLE      |   PMC2  | 12711180 |
+| FP_COMP_OPS_EXE_SSE_FP_SCALAR_DOUBLE |   PMC1  |  2870581 |
+|       SIMD_FP_256_PACKED_DOUBLE      |   PMC2  | 12685880 |
 +--------------------------------------+---------+----------+
 
 +----------------------+-----------+
 |        Metric        |   Core 1  |
 +----------------------+-----------+
-|  Runtime (RDTSC) [s] |    0.0174 |
+|  Runtime (RDTSC) [s] |    0.0187 |
 | Runtime unhalted [s] |    0.0254 |
-|      Clock [MHz]     | 2414.3365 |
-|          CPI         |    0.6048 |
-|      DP MFLOP/s      | 3083.0277 |
-|    AVX DP MFLOP/s    | 2918.2060 |
-|    Packed MUOPS/s    |  729.5515 |
-|    Scalar MUOPS/s    |  164.8217 |
+|      Clock [MHz]     | 2257.8529 |
+|          CPI         |    0.6071 |
+|      DP MFLOP/s      | 2864.4556 |
+|    AVX DP MFLOP/s    | 2711.0882 |
+|    Packed MUOPS/s    |  677.7721 |
+|    Scalar MUOPS/s    |  153.3673 |
 +----------------------+-----------+
 
 Region op2, Group 1: FLOPS_DP
 +-------------------+----------+
 |    Region Info    |  Core 1  |
 +-------------------+----------+
-| RDTSC Runtime [s] | 0.010848 |
+| RDTSC Runtime [s] | 0.006206 |
 |     call count    |       10 |
 +-------------------+----------+
 
 +--------------------------------------+---------+----------+
 |                 Event                | Counter |  Core 1  |
 +--------------------------------------+---------+----------+
-|           INSTR_RETIRED_ANY          |  FIXC0  | 58996120 |
-|         CPU_CLK_UNHALTED_CORE        |  FIXC1  | 27111490 |
-|         CPU_CLK_UNHALTED_REF         |  FIXC2  | 24926800 |
+|           INSTR_RETIRED_ANY          |  FIXC0  | 34257760 |
+|         CPU_CLK_UNHALTED_CORE        |  FIXC1  | 14689280 |
+|         CPU_CLK_UNHALTED_REF         |  FIXC2  | 14285370 |
 | FP_COMP_OPS_EXE_SSE_FP_PACKED_DOUBLE |   PMC0  |        0 |
-| FP_COMP_OPS_EXE_SSE_FP_SCALAR_DOUBLE |   PMC1  |  2398604 |
-|       SIMD_FP_256_PACKED_DOUBLE      |   PMC2  | 10526360 |
+| FP_COMP_OPS_EXE_SSE_FP_SCALAR_DOUBLE |   PMC1  |  1364515 |
+|       SIMD_FP_256_PACKED_DOUBLE      |   PMC2  | 10500030 |
 +--------------------------------------+---------+----------+
 
 +----------------------+-----------+
 |        Metric        |   Core 1  |
 +----------------------+-----------+
-|  Runtime (RDTSC) [s] |    0.0108 |
-| Runtime unhalted [s] |    0.0118 |
-|      Clock [MHz]     | 2495.9087 |
-|          CPI         |    0.4595 |
-|      DP MFLOP/s      | 4102.6967 |
-|    AVX DP MFLOP/s    | 3881.5765 |
-|    Packed MUOPS/s    |  970.3941 |
-|    Scalar MUOPS/s    |  221.1202 |
+|  Runtime (RDTSC) [s] |    0.0062 |
+| Runtime unhalted [s] |    0.0064 |
+|      Clock [MHz]     | 2359.6642 |
+|          CPI         |    0.4288 |
+|      DP MFLOP/s      | 6988.0912 |
+|    AVX DP MFLOP/s    | 6768.2034 |
+|    Packed MUOPS/s    | 1692.0508 |
+|    Scalar MUOPS/s    |  219.8878 |
 +----------------------+-----------+
 

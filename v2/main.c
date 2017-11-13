@@ -241,37 +241,8 @@ int main(int argc, char const *argv[])
 	for (l = 0; l < max_iter; ++l) {
         LIKWID_MARKER_START("op2");
         t_begin = timestamp();
-        // for (i = 0; i < N; i++) {
-		// 	for (j = 0; j < N; j++) {
-		// 		soma = 0.0;
-		// 		for (k = 0; k < N; k++) {
-		// 			soma += A[i*N+k] * AI[j*N+k];
-		// 		}
-		// 		R[i*N+j] = (i == j) ? 1 - soma: 0 - soma;
-		// 	}
-		// }
-
         for (i = 0; i < N; i++) {
-			for (j = 0; j < size; ++j) {
-				soma_v[0] = 0.0;
-				soma_v[1] = 0.0;
-				soma_v[2] = 0.0;
-				soma_v[3] = 0.0;
-				for (k = 0; k < N; k++) {
-					soma_v[0] += A[i*N+k] * AI[j*N+k];
-					soma_v[1] += A[i*N+k] * AI[(j+1)*N+k];
-					soma_v[2] += A[i*N+k] * AI[(j+2)*N+k];
-					soma_v[3] += A[i*N+k] * AI[(j+3)*N+k];
-				}
-				R[i*N+j] = (i == j) ? 1 - soma_v[0]: 0 - soma_v[0];
-				R[i*N+j+1] = (i == j+1) ? 1 - soma_v[1]: 0 - soma_v[1];
-				R[i*N+j+2] = (i == j+2) ? 1 - soma_v[2]: 0 - soma_v[2];
-				R[i*N+j+3] = (i == j+3) ? 1 - soma_v[3]: 0 - soma_v[3];
-			}
-		}
-        //Remainder
-        for (i = 0; i < N; i++) {
-			for (j = size; j < N; j++) {
+			for (j = 0; j < N; j++) {
 				soma = 0.0;
 				for (k = 0; k < N; k++) {
 					soma += A[i*N+k] * AI[j*N+k];
@@ -279,6 +250,35 @@ int main(int argc, char const *argv[])
 				R[i*N+j] = (i == j) ? 1 - soma: 0 - soma;
 			}
 		}
+
+        // for (i = 0; i < N; i++) {
+		// 	for (j = 0; j < size; ++j) {
+		// 		soma_v[0] = 0.0;
+		// 		soma_v[1] = 0.0;
+		// 		soma_v[2] = 0.0;
+		// 		soma_v[3] = 0.0;
+		// 		for (k = 0; k < N; k++) {
+		// 			soma_v[0] += A[i*N+k] * AI[j*N+k];
+		// 			soma_v[1] += A[i*N+k] * AI[(j+1)*N+k];
+		// 			soma_v[2] += A[i*N+k] * AI[(j+2)*N+k];
+		// 			soma_v[3] += A[i*N+k] * AI[(j+3)*N+k];
+		// 		}
+		// 		R[i*N+j] = (i == j) ? 1 - soma_v[0]: 0 - soma_v[0];
+		// 		R[i*N+j+1] = (i == j+1) ? 1 - soma_v[1]: 0 - soma_v[1];
+		// 		R[i*N+j+2] = (i == j+2) ? 1 - soma_v[2]: 0 - soma_v[2];
+		// 		R[i*N+j+3] = (i == j+3) ? 1 - soma_v[3]: 0 - soma_v[3];
+		// 	}
+		// }
+        // //Remainder
+        // for (i = 0; i < N; i++) {
+		// 	for (j = size; j < N; j++) {
+		// 		soma = 0.0;
+		// 		for (k = 0; k < N; k++) {
+		// 			soma += A[i*N+k] * AI[j*N+k];
+		// 		}
+		// 		R[i*N+j] = (i == j) ? 1 - soma: 0 - soma;
+		// 	}
+		// }
 
         t_end = timestamp();
         LIKWID_MARKER_STOP("op2");

@@ -3,67 +3,68 @@ CPU name:	Intel(R) Core(TM) i7-3610QM CPU @ 2.30GHz
 CPU type:	Intel Core IvyBridge processor
 CPU clock:	2.29 GHz
 --------------------------------------------------------------------------------
-t_op1 50543.9
-t_op2 28230.8
+V2222
+t_op1 57915.4
+t_op2 42035.9
 Fim!
 --------------------------------------------------------------------------------
 Region op1, Group 1: L2CACHE
 +-------------------+-----------+
 |    Region Info    |   Core 1  |
 +-------------------+-----------+
-| RDTSC Runtime [s] | 47.095280 |
+| RDTSC Runtime [s] | 54.104710 |
 |     call count    |     22000 |
 +-------------------+-----------+
 
 +-----------------------+---------+--------------+
 |         Event         | Counter |    Core 1    |
 +-----------------------+---------+--------------+
-|   INSTR_RETIRED_ANY   |  FIXC0  | 249050100000 |
-| CPU_CLK_UNHALTED_CORE |  FIXC1  | 152468700000 |
-|  CPU_CLK_UNHALTED_REF |  FIXC2  | 107674600000 |
-| L2_TRANS_ALL_REQUESTS |   PMC0  |  48435920000 |
-|     L2_RQSTS_MISS     |   PMC1  |  16006070000 |
+|   INSTR_RETIRED_ANY   |  FIXC0  | 248958300000 |
+| CPU_CLK_UNHALTED_CORE |  FIXC1  | 150448300000 |
+|  CPU_CLK_UNHALTED_REF |  FIXC2  | 124263900000 |
+| L2_TRANS_ALL_REQUESTS |   PMC0  |  48364620000 |
+|     L2_RQSTS_MISS     |   PMC1  |  15787300000 |
 +-----------------------+---------+--------------+
 
 +----------------------+-----------+
 |        Metric        |   Core 1  |
 +----------------------+-----------+
-|  Runtime (RDTSC) [s] |   47.0953 |
-| Runtime unhalted [s] |   66.4414 |
-|      Clock [MHz]     | 3249.4461 |
-|          CPI         |    0.6122 |
-|    L2 request rate   |    0.1945 |
-|     L2 miss rate     |    0.0643 |
-|     L2 miss ratio    |    0.3305 |
+|  Runtime (RDTSC) [s] |   54.1047 |
+| Runtime unhalted [s] |   65.5671 |
+|      Clock [MHz]     | 2778.0730 |
+|          CPI         |    0.6043 |
+|    L2 request rate   |    0.1943 |
+|     L2 miss rate     |    0.0634 |
+|     L2 miss ratio    |    0.3264 |
 +----------------------+-----------+
 
 Region op2, Group 1: L2CACHE
 +-------------------+-----------+
 |    Region Info    |   Core 1  |
 +-------------------+-----------+
-| RDTSC Runtime [s] | 28.230850 |
+| RDTSC Runtime [s] | 42.035990 |
 |     call count    |        10 |
 +-------------------+-----------+
 
 +-----------------------+---------+--------------+
 |         Event         | Counter |    Core 1    |
 +-----------------------+---------+--------------+
-|   INSTR_RETIRED_ANY   |  FIXC0  | 195619300000 |
-| CPU_CLK_UNHALTED_CORE |  FIXC1  |  92293420000 |
-|  CPU_CLK_UNHALTED_REF |  FIXC2  |  64549830000 |
-| L2_TRANS_ALL_REQUESTS |   PMC0  |  13213290000 |
-|     L2_RQSTS_MISS     |   PMC1  |    700762500 |
+|   INSTR_RETIRED_ANY   |  FIXC0  | 106621000000 |
+| CPU_CLK_UNHALTED_CORE |  FIXC1  | 112019500000 |
+|  CPU_CLK_UNHALTED_REF |  FIXC2  |  96031200000 |
+| L2_TRANS_ALL_REQUESTS |   PMC0  |  44277450000 |
+|     L2_RQSTS_MISS     |   PMC1  |  13723870000 |
 +-----------------------+---------+--------------+
 
 +----------------------+-----------+
 |        Metric        |   Core 1  |
 +----------------------+-----------+
-|  Runtime (RDTSC) [s] |   28.2309 |
-| Runtime unhalted [s] |   40.2188 |
-|      Clock [MHz]     | 3281.0854 |
-|          CPI         |    0.4718 |
-|    L2 request rate   |    0.0675 |
-|     L2 miss rate     |    0.0036 |
-|     L2 miss ratio    |    0.0530 |
+|  Runtime (RDTSC) [s] |   42.0360 |
+| Runtime unhalted [s] |   48.8194 |
+|      Clock [MHz]     | 2676.5947 |
+|          CPI         |    1.0506 |
+|    L2 request rate   |    0.4153 |
+|     L2 miss rate     |    0.1287 |
+|     L2 miss ratio    |    0.3100 |
 +----------------------+-----------+
 

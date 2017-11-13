@@ -3,73 +3,74 @@ CPU name:	Intel(R) Core(TM) i7-3610QM CPU @ 2.30GHz
 CPU type:	Intel Core IvyBridge processor
 CPU clock:	2.29 GHz
 --------------------------------------------------------------------------------
-t_op1 130.16
-t_op2 1.77075
+V2222
+t_op1 20.5781
+t_op2 0.166772
 Fim!
 --------------------------------------------------------------------------------
 Region op1, Group 1: L3
 +-------------------+----------+
 |    Region Info    |  Core 1  |
 +-------------------+----------+
-| RDTSC Runtime [s] | 0.004479 |
+| RDTSC Runtime [s] | 0.004165 |
 |     call count    |      704 |
 +-------------------+----------+
 
 +------------------------+---------+----------+
 |          Event         | Counter |  Core 1  |
 +------------------------+---------+----------+
-|    INSTR_RETIRED_ANY   |  FIXC0  | 17169800 |
-|  CPU_CLK_UNHALTED_CORE |  FIXC1  | 15459730 |
-|  CPU_CLK_UNHALTED_REF  |  FIXC2  | 20117590 |
-|     L2_LINES_IN_ALL    |   PMC0  |   414788 |
-| L2_LINES_OUT_DIRTY_ALL |   PMC1  |    23330 |
+|    INSTR_RETIRED_ANY   |  FIXC0  | 17033870 |
+|  CPU_CLK_UNHALTED_CORE |  FIXC1  | 15035130 |
+|  CPU_CLK_UNHALTED_REF  |  FIXC2  | 19426420 |
+|     L2_LINES_IN_ALL    |   PMC0  |   368563 |
+| L2_LINES_OUT_DIRTY_ALL |   PMC1  |    22706 |
 +------------------------+---------+----------+
 
 +-------------------------------+-----------+
 |             Metric            |   Core 1  |
 +-------------------------------+-----------+
-|      Runtime (RDTSC) [s]      |    0.0045 |
-|      Runtime unhalted [s]     |    0.0067 |
-|          Clock [MHz]          | 1763.4575 |
-|              CPI              |    0.9004 |
-|  L3 load bandwidth [MBytes/s] | 5926.9637 |
-|  L3 load data volume [GBytes] |    0.0265 |
-| L3 evict bandwidth [MBytes/s] |  333.3656 |
+|      Runtime (RDTSC) [s]      |    0.0042 |
+|      Runtime unhalted [s]     |    0.0066 |
+|          Clock [MHz]          | 1776.0498 |
+|              CPI              |    0.8827 |
+|  L3 load bandwidth [MBytes/s] | 5663.7833 |
+|  L3 load data volume [GBytes] |    0.0236 |
+| L3 evict bandwidth [MBytes/s] |  348.9278 |
 | L3 evict data volume [GBytes] |    0.0015 |
-|    L3 bandwidth [MBytes/s]    | 6260.3294 |
-|    L3 data volume [GBytes]    |    0.0280 |
+|    L3 bandwidth [MBytes/s]    | 6012.7111 |
+|    L3 data volume [GBytes]    |    0.0250 |
 +-------------------------------+-----------+
 
 Region op2, Group 1: L3
 +-------------------+----------+
 |    Region Info    |  Core 1  |
 +-------------------+----------+
-| RDTSC Runtime [s] | 0.001774 |
+| RDTSC Runtime [s] | 0.001671 |
 |     call count    |       10 |
 +-------------------+----------+
 
 +------------------------+---------+---------+
 |          Event         | Counter |  Core 1 |
 +------------------------+---------+---------+
-|    INSTR_RETIRED_ANY   |  FIXC0  | 7726740 |
-|  CPU_CLK_UNHALTED_CORE |  FIXC1  | 3375715 |
-|  CPU_CLK_UNHALTED_REF  |  FIXC2  | 4203388 |
-|     L2_LINES_IN_ALL    |   PMC0  |   18157 |
-| L2_LINES_OUT_DIRTY_ALL |   PMC1  |    2085 |
+|    INSTR_RETIRED_ANY   |  FIXC0  | 7510900 |
+|  CPU_CLK_UNHALTED_CORE |  FIXC1  | 3143080 |
+|  CPU_CLK_UNHALTED_REF  |  FIXC2  | 3970973 |
+|     L2_LINES_IN_ALL    |   PMC0  |   18629 |
+| L2_LINES_OUT_DIRTY_ALL |   PMC1  |    2074 |
 +------------------------+---------+---------+
 
 +-------------------------------+-----------+
 |             Metric            |   Core 1  |
 +-------------------------------+-----------+
-|      Runtime (RDTSC) [s]      |    0.0018 |
-|      Runtime unhalted [s]     |    0.0015 |
-|          Clock [MHz]          | 1842.9152 |
-|              CPI              |    0.4369 |
-|  L3 load bandwidth [MBytes/s] |  655.1308 |
+|      Runtime (RDTSC) [s]      |    0.0017 |
+|      Runtime unhalted [s]     |    0.0014 |
+|          Clock [MHz]          | 1816.3487 |
+|              CPI              |    0.4185 |
+|  L3 load bandwidth [MBytes/s] |  713.3986 |
 |  L3 load data volume [GBytes] |    0.0012 |
-| L3 evict bandwidth [MBytes/s] |   75.2298 |
+| L3 evict bandwidth [MBytes/s] |   79.4239 |
 | L3 evict data volume [GBytes] |    0.0001 |
-|    L3 bandwidth [MBytes/s]    |  730.3606 |
+|    L3 bandwidth [MBytes/s]    |  792.8225 |
 |    L3 data volume [GBytes]    |    0.0013 |
 +-------------------------------+-----------+
 

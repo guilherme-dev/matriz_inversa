@@ -3,16 +3,15 @@ CPU name:	Intel(R) Core(TM) i7-3610QM CPU @ 2.30GHz
 CPU type:	Intel Core IvyBridge processor
 CPU clock:	2.29 GHz
 --------------------------------------------------------------------------------
-Chegou no printf
-t_op1 606.552
-t_op2 168.436
+t_op1 600.594
+t_op2 167.257
 Fim!
 --------------------------------------------------------------------------------
 Region op1, Group 1: L2CACHE
 +-------------------+----------+
 |    Region Info    |  Core 1  |
 +-------------------+----------+
-| RDTSC Runtime [s] | 0.206601 |
+| RDTSC Runtime [s] | 0.204386 |
 |     call count    |     2827 |
 +-------------------+----------+
 
@@ -20,29 +19,29 @@ Region op1, Group 1: L2CACHE
 |         Event         | Counter |   Core 1   |
 +-----------------------+---------+------------+
 |   INSTR_RETIRED_ANY   |  FIXC0  | 1153012000 |
-| CPU_CLK_UNHALTED_CORE |  FIXC1  |  627242800 |
-|  CPU_CLK_UNHALTED_REF |  FIXC2  |  501760200 |
-| L2_TRANS_ALL_REQUESTS |   PMC0  |  112306100 |
-|     L2_RQSTS_MISS     |   PMC1  |   39275970 |
+| CPU_CLK_UNHALTED_CORE |  FIXC1  |  626946200 |
+|  CPU_CLK_UNHALTED_REF |  FIXC2  |  495699400 |
+| L2_TRANS_ALL_REQUESTS |   PMC0  |  111923000 |
+|     L2_RQSTS_MISS     |   PMC1  |   39160760 |
 +-----------------------+---------+------------+
 
 +----------------------+-----------+
 |        Metric        |   Core 1  |
 +----------------------+-----------+
-|  Runtime (RDTSC) [s] |    0.2066 |
-| Runtime unhalted [s] |    0.2733 |
-|      Clock [MHz]     | 2868.6625 |
-|          CPI         |    0.5440 |
-|    L2 request rate   |    0.0974 |
-|     L2 miss rate     |    0.0341 |
-|     L2 miss ratio    |    0.3497 |
+|  Runtime (RDTSC) [s] |    0.2044 |
+| Runtime unhalted [s] |    0.2732 |
+|      Clock [MHz]     | 2902.3786 |
+|          CPI         |    0.5437 |
+|    L2 request rate   |    0.0971 |
+|     L2 miss rate     |    0.0340 |
+|     L2 miss ratio    |    0.3499 |
 +----------------------+-----------+
 
 Region op2, Group 1: L2CACHE
 +-------------------+----------+
 |    Region Info    |  Core 1  |
 +-------------------+----------+
-| RDTSC Runtime [s] | 0.166735 |
+| RDTSC Runtime [s] | 0.165616 |
 |     call count    |       10 |
 +-------------------+----------+
 
@@ -50,21 +49,90 @@ Region op2, Group 1: L2CACHE
 |         Event         | Counter |   Core 1   |
 +-----------------------+---------+------------+
 |   INSTR_RETIRED_ANY   |  FIXC0  | 1031770000 |
-| CPU_CLK_UNHALTED_CORE |  FIXC1  |  501249200 |
-|  CPU_CLK_UNHALTED_REF |  FIXC2  |  380015700 |
-| L2_TRANS_ALL_REQUESTS |   PMC0  |   65415180 |
-|     L2_RQSTS_MISS     |   PMC1  |   21778360 |
+| CPU_CLK_UNHALTED_CORE |  FIXC1  |  501611200 |
+|  CPU_CLK_UNHALTED_REF |  FIXC2  |  377038600 |
+| L2_TRANS_ALL_REQUESTS |   PMC0  |   65522500 |
+|     L2_RQSTS_MISS     |   PMC1  |   21825700 |
 +-----------------------+---------+------------+
 
 +----------------------+-----------+
 |        Metric        |   Core 1  |
 +----------------------+-----------+
-|  Runtime (RDTSC) [s] |    0.1667 |
-| Runtime unhalted [s] |    0.2184 |
-|      Clock [MHz]     | 3026.8586 |
-|          CPI         |    0.4858 |
-|    L2 request rate   |    0.0634 |
+|  Runtime (RDTSC) [s] |    0.1656 |
+| Runtime unhalted [s] |    0.2186 |
+|      Clock [MHz]     | 3052.9774 |
+|          CPI         |    0.4862 |
+|    L2 request rate   |    0.0635 |
+|     L2 miss rate     |    0.0212 |
+|     L2 miss ratio    |    0.3331 |
++----------------------+-----------+
+
+--------------------------------------------------------------------------------
+CPU name:	Intel(R) Core(TM) i7-3610QM CPU @ 2.30GHz
+CPU type:	Intel Core IvyBridge processor
+CPU clock:	2.29 GHz
+--------------------------------------------------------------------------------
+t_op1 23.2939
+t_op2 16.7412
+Fim!
+--------------------------------------------------------------------------------
+Region op1, Group 1: L2CACHE
++-------------------+----------+
+|    Region Info    |  Core 1  |
++-------------------+----------+
+| RDTSC Runtime [s] | 0.205486 |
+|     call count    |     2827 |
++-------------------+----------+
+
++-----------------------+---------+------------+
+|         Event         | Counter |   Core 1   |
++-----------------------+---------+------------+
+|   INSTR_RETIRED_ANY   |  FIXC0  | 1153057000 |
+| CPU_CLK_UNHALTED_CORE |  FIXC1  |  627245400 |
+|  CPU_CLK_UNHALTED_REF |  FIXC2  |  498302600 |
+| L2_TRANS_ALL_REQUESTS |   PMC0  |  111833100 |
+|     L2_RQSTS_MISS     |   PMC1  |   39118530 |
++-----------------------+---------+------------+
+
++----------------------+-----------+
+|        Metric        |   Core 1  |
++----------------------+-----------+
+|  Runtime (RDTSC) [s] |    0.2055 |
+| Runtime unhalted [s] |    0.2733 |
+|      Clock [MHz]     | 2888.5305 |
+|          CPI         |    0.5440 |
+|    L2 request rate   |    0.0970 |
+|     L2 miss rate     |    0.0339 |
+|     L2 miss ratio    |    0.3498 |
++----------------------+-----------+
+
+Region op2, Group 1: L2CACHE
++-------------------+----------+
+|    Region Info    |  Core 1  |
++-------------------+----------+
+| RDTSC Runtime [s] | 0.165842 |
+|     call count    |       10 |
++-------------------+----------+
+
++-----------------------+---------+------------+
+|         Event         | Counter |   Core 1   |
++-----------------------+---------+------------+
+|   INSTR_RETIRED_ANY   |  FIXC0  | 1031770000 |
+| CPU_CLK_UNHALTED_CORE |  FIXC1  |  501587400 |
+|  CPU_CLK_UNHALTED_REF |  FIXC2  |  377411300 |
+| L2_TRANS_ALL_REQUESTS |   PMC0  |   65483060 |
+|     L2_RQSTS_MISS     |   PMC1  |   21806090 |
++-----------------------+---------+------------+
+
++----------------------+-----------+
+|        Metric        |   Core 1  |
++----------------------+-----------+
+|  Runtime (RDTSC) [s] |    0.1658 |
+| Runtime unhalted [s] |    0.2186 |
+|      Clock [MHz]     | 3049.7507 |
+|          CPI         |    0.4861 |
+|    L2 request rate   |    0.0635 |
 |     L2 miss rate     |    0.0211 |
-|     L2 miss ratio    |    0.3329 |
+|     L2 miss ratio    |    0.3330 |
 +----------------------+-----------+
 

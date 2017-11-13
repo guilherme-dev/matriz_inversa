@@ -3,16 +3,15 @@ CPU name:	Intel(R) Core(TM) i7-3610QM CPU @ 2.30GHz
 CPU type:	Intel Core IvyBridge processor
 CPU clock:	2.29 GHz
 --------------------------------------------------------------------------------
-Chegou no printf
-t_op1 13535.1
-t_op2 9812.23
+t_op1 13847.6
+t_op2 10074.4
 Fim!
 --------------------------------------------------------------------------------
 Region op1, Group 1: L2CACHE
 +-------------------+-----------+
 |    Region Info    |   Core 1  |
 +-------------------+-----------+
-| RDTSC Runtime [s] | 12.018060 |
+| RDTSC Runtime [s] | 12.269710 |
 |     call count    |     11000 |
 +-------------------+-----------+
 
@@ -20,29 +19,98 @@ Region op1, Group 1: L2CACHE
 |         Event         | Counter |    Core 1   |
 +-----------------------+---------+-------------+
 |   INSTR_RETIRED_ANY   |  FIXC0  | 66388730000 |
-| CPU_CLK_UNHALTED_CORE |  FIXC1  | 38777140000 |
-|  CPU_CLK_UNHALTED_REF |  FIXC2  | 27492620000 |
-| L2_TRANS_ALL_REQUESTS |   PMC0  |  5982184000 |
-|     L2_RQSTS_MISS     |   PMC1  |  1818392000 |
+| CPU_CLK_UNHALTED_CORE |  FIXC1  | 39016320000 |
+|  CPU_CLK_UNHALTED_REF |  FIXC2  | 28003000000 |
+| L2_TRANS_ALL_REQUESTS |   PMC0  |  6104463000 |
+|     L2_RQSTS_MISS     |   PMC1  |  1840555000 |
 +-----------------------+---------+-------------+
 
 +----------------------+-----------+
 |        Metric        |   Core 1  |
 +----------------------+-----------+
-|  Runtime (RDTSC) [s] |   12.0181 |
-| Runtime unhalted [s] |   16.8980 |
-|      Clock [MHz]     | 3236.6842 |
-|          CPI         |    0.5841 |
-|    L2 request rate   |    0.0901 |
+|  Runtime (RDTSC) [s] |   12.2697 |
+| Runtime unhalted [s] |   17.0022 |
+|      Clock [MHz]     | 3197.2982 |
+|          CPI         |    0.5877 |
+|    L2 request rate   |    0.0920 |
+|     L2 miss rate     |    0.0277 |
+|     L2 miss ratio    |    0.3015 |
++----------------------+-----------+
+
+Region op2, Group 1: L2CACHE
++-------------------+-----------+
+|    Region Info    |   Core 1  |
++-------------------+-----------+
+| RDTSC Runtime [s] | 10.072470 |
+|     call count    |        10 |
++-------------------+-----------+
+
++-----------------------+---------+-------------+
+|         Event         | Counter |    Core 1   |
++-----------------------+---------+-------------+
+|   INSTR_RETIRED_ANY   |  FIXC0  | 60200240000 |
+| CPU_CLK_UNHALTED_CORE |  FIXC1  | 32176080000 |
+|  CPU_CLK_UNHALTED_REF |  FIXC2  | 22868360000 |
+| L2_TRANS_ALL_REQUESTS |   PMC0  |  4489372000 |
+|     L2_RQSTS_MISS     |   PMC1  |  1300824000 |
++-----------------------+---------+-------------+
+
++----------------------+-----------+
+|        Metric        |   Core 1  |
++----------------------+-----------+
+|  Runtime (RDTSC) [s] |   10.0725 |
+| Runtime unhalted [s] |   14.0214 |
+|      Clock [MHz]     | 3228.7879 |
+|          CPI         |    0.5345 |
+|    L2 request rate   |    0.0746 |
+|     L2 miss rate     |    0.0216 |
+|     L2 miss ratio    |    0.2898 |
++----------------------+-----------+
+
+--------------------------------------------------------------------------------
+CPU name:	Intel(R) Core(TM) i7-3610QM CPU @ 2.30GHz
+CPU type:	Intel Core IvyBridge processor
+CPU clock:	2.29 GHz
+--------------------------------------------------------------------------------
+t_op1 135.292
+t_op2 981.362
+Fim!
+--------------------------------------------------------------------------------
+Region op1, Group 1: L2CACHE
++-------------------+-----------+
+|    Region Info    |   Core 1  |
++-------------------+-----------+
+| RDTSC Runtime [s] | 12.001940 |
+|     call count    |     11000 |
++-------------------+-----------+
+
++-----------------------+---------+-------------+
+|         Event         | Counter |    Core 1   |
++-----------------------+---------+-------------+
+|   INSTR_RETIRED_ANY   |  FIXC0  | 66388910000 |
+| CPU_CLK_UNHALTED_CORE |  FIXC1  | 38754460000 |
+|  CPU_CLK_UNHALTED_REF |  FIXC2  | 27421250000 |
+| L2_TRANS_ALL_REQUESTS |   PMC0  |  5987690000 |
+|     L2_RQSTS_MISS     |   PMC1  |  1819537000 |
++-----------------------+---------+-------------+
+
++----------------------+-----------+
+|        Metric        |   Core 1  |
++----------------------+-----------+
+|  Runtime (RDTSC) [s] |   12.0019 |
+| Runtime unhalted [s] |   16.8881 |
+|      Clock [MHz]     | 3243.2117 |
+|          CPI         |    0.5837 |
+|    L2 request rate   |    0.0902 |
 |     L2 miss rate     |    0.0274 |
-|     L2 miss ratio    |    0.3040 |
+|     L2 miss ratio    |    0.3039 |
 +----------------------+-----------+
 
 Region op2, Group 1: L2CACHE
 +-------------------+----------+
 |    Region Info    |  Core 1  |
 +-------------------+----------+
-| RDTSC Runtime [s] | 9.809822 |
+| RDTSC Runtime [s] | 9.811086 |
 |     call count    |       10 |
 +-------------------+----------+
 
@@ -50,21 +118,21 @@ Region op2, Group 1: L2CACHE
 |         Event         | Counter |    Core 1   |
 +-----------------------+---------+-------------+
 |   INSTR_RETIRED_ANY   |  FIXC0  | 60200240000 |
-| CPU_CLK_UNHALTED_CORE |  FIXC1  | 32010710000 |
-|  CPU_CLK_UNHALTED_REF |  FIXC2  | 22406050000 |
-| L2_TRANS_ALL_REQUESTS |   PMC0  |  4380674000 |
-|     L2_RQSTS_MISS     |   PMC1  |  1283202000 |
+| CPU_CLK_UNHALTED_CORE |  FIXC1  | 31994230000 |
+|  CPU_CLK_UNHALTED_REF |  FIXC2  | 22382030000 |
+| L2_TRANS_ALL_REQUESTS |   PMC0  |  4391235000 |
+|     L2_RQSTS_MISS     |   PMC1  |  1286045000 |
 +-----------------------+---------+-------------+
 
 +----------------------+-----------+
 |        Metric        |   Core 1  |
 +----------------------+-----------+
-|  Runtime (RDTSC) [s] |    9.8098 |
-| Runtime unhalted [s] |   13.9494 |
-|      Clock [MHz]     | 3278.4660 |
-|          CPI         |    0.5317 |
-|    L2 request rate   |    0.0728 |
-|     L2 miss rate     |    0.0213 |
+|  Runtime (RDTSC) [s] |    9.8111 |
+| Runtime unhalted [s] |   13.9422 |
+|      Clock [MHz]     | 3280.2961 |
+|          CPI         |    0.5315 |
+|    L2 request rate   |    0.0729 |
+|     L2 miss rate     |    0.0214 |
 |     L2 miss ratio    |    0.2929 |
 +----------------------+-----------+
 

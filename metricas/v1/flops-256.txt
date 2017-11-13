@@ -3,16 +3,15 @@ CPU name:	Intel(R) Core(TM) i7-3610QM CPU @ 2.30GHz
 CPU type:	Intel Core IvyBridge processor
 CPU clock:	2.29 GHz
 --------------------------------------------------------------------------------
-Chegou no printf
-t_op1 637.101
-t_op2 169.136
+t_op1 646.407
+t_op2 171.259
 Fim!
 --------------------------------------------------------------------------------
 Region op1, Group 1: FLOPS_DP
 +-------------------+----------+
 |    Region Info    |  Core 1  |
 +-------------------+----------+
-| RDTSC Runtime [s] | 0.207302 |
+| RDTSC Runtime [s] | 0.208069 |
 |     call count    |     2816 |
 +-------------------+----------+
 
@@ -20,31 +19,31 @@ Region op1, Group 1: FLOPS_DP
 |                 Event                | Counter |   Core 1   |
 +--------------------------------------+---------+------------+
 |           INSTR_RETIRED_ANY          |  FIXC0  | 1140049000 |
-|         CPU_CLK_UNHALTED_CORE        |  FIXC1  |  638062000 |
-|         CPU_CLK_UNHALTED_REF         |  FIXC2  |  501855700 |
+|         CPU_CLK_UNHALTED_CORE        |  FIXC1  |  641828500 |
+|         CPU_CLK_UNHALTED_REF         |  FIXC2  |  503184600 |
 | FP_COMP_OPS_EXE_SSE_FP_PACKED_DOUBLE |   PMC0  |          0 |
-| FP_COMP_OPS_EXE_SSE_FP_SCALAR_DOUBLE |   PMC1  |  450859000 |
+| FP_COMP_OPS_EXE_SSE_FP_SCALAR_DOUBLE |   PMC1  |  450626000 |
 |       SIMD_FP_256_PACKED_DOUBLE      |   PMC2  |          0 |
 +--------------------------------------+---------+------------+
 
 +----------------------+-----------+
 |        Metric        |   Core 1  |
 +----------------------+-----------+
-|  Runtime (RDTSC) [s] |    0.2073 |
-| Runtime unhalted [s] |    0.2781 |
-|      Clock [MHz]     | 2917.5266 |
-|          CPI         |    0.5597 |
-|      DP MFLOP/s      | 2174.8887 |
+|  Runtime (RDTSC) [s] |    0.2081 |
+| Runtime unhalted [s] |    0.2797 |
+|      Clock [MHz]     | 2927.0671 |
+|          CPI         |    0.5630 |
+|      DP MFLOP/s      | 2165.7569 |
 |    AVX DP MFLOP/s    |         0 |
 |    Packed MUOPS/s    |         0 |
-|    Scalar MUOPS/s    | 2174.8887 |
+|    Scalar MUOPS/s    | 2165.7569 |
 +----------------------+-----------+
 
 Region op2, Group 1: FLOPS_DP
 +-------------------+----------+
 |    Region Info    |  Core 1  |
 +-------------------+----------+
-| RDTSC Runtime [s] | 0.167301 |
+| RDTSC Runtime [s] | 0.169372 |
 |     call count    |       10 |
 +-------------------+----------+
 
@@ -52,23 +51,29 @@ Region op2, Group 1: FLOPS_DP
 |                 Event                | Counter |   Core 1   |
 +--------------------------------------+---------+------------+
 |           INSTR_RETIRED_ANY          |  FIXC0  | 1019826000 |
-|         CPU_CLK_UNHALTED_CORE        |  FIXC1  |  508824500 |
-|         CPU_CLK_UNHALTED_REF         |  FIXC2  |  381092400 |
+|         CPU_CLK_UNHALTED_CORE        |  FIXC1  |  514027600 |
+|         CPU_CLK_UNHALTED_REF         |  FIXC2  |  386041400 |
 | FP_COMP_OPS_EXE_SSE_FP_PACKED_DOUBLE |   PMC0  |          0 |
-| FP_COMP_OPS_EXE_SSE_FP_SCALAR_DOUBLE |   PMC1  |  392336000 |
+| FP_COMP_OPS_EXE_SSE_FP_SCALAR_DOUBLE |   PMC1  |  392064600 |
 |       SIMD_FP_256_PACKED_DOUBLE      |   PMC2  |          0 |
 +--------------------------------------+---------+------------+
 
 +----------------------+-----------+
 |        Metric        |   Core 1  |
 +----------------------+-----------+
-|  Runtime (RDTSC) [s] |    0.1673 |
-| Runtime unhalted [s] |    0.2217 |
-|      Clock [MHz]     | 3063.8573 |
-|          CPI         |    0.4989 |
-|      DP MFLOP/s      | 2345.0850 |
+|  Runtime (RDTSC) [s] |    0.1694 |
+| Runtime unhalted [s] |    0.2240 |
+|      Clock [MHz]     | 3055.5794 |
+|          CPI         |    0.5040 |
+|      DP MFLOP/s      | 2314.8190 |
 |    AVX DP MFLOP/s    |         0 |
 |    Packed MUOPS/s    |         0 |
-|    Scalar MUOPS/s    | 2345.0850 |
+|    Scalar MUOPS/s    | 2314.8190 |
 +----------------------+-----------+
 
+--------------------------------------------------------------------------------
+CPU name:	Intel(R) Core(TM) i7-3610QM CPU @ 2.30GHz
+CPU type:	Intel Core IvyBridge processor
+CPU clock:	2.29 GHz
+--------------------------------------------------------------------------------
+--------------------------------------------------------------------------------

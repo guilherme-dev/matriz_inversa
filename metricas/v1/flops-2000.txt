@@ -3,48 +3,47 @@ CPU name:	Intel(R) Core(TM) i7-3610QM CPU @ 2.30GHz
 CPU type:	Intel Core IvyBridge processor
 CPU clock:	2.29 GHz
 --------------------------------------------------------------------------------
-Chegou no printf
-t_op1 99533.7
-t_op2 79590.5
+t_op1 118516
+t_op2 97203.4
 Fim!
 --------------------------------------------------------------------------------
 Region op1, Group 1: FLOPS_DP
-+-------------------+-----------+
-|    Region Info    |   Core 1  |
-+-------------------+-----------+
-| RDTSC Runtime [s] | 95.517120 |
-|     call count    |     22000 |
-+-------------------+-----------+
++-------------------+------------+
+|    Region Info    |   Core 1   |
++-------------------+------------+
+| RDTSC Runtime [s] | 113.777600 |
+|     call count    |      22000 |
++-------------------+------------+
 
 +--------------------------------------+---------+--------------+
 |                 Event                | Counter |    Core 1    |
 +--------------------------------------+---------+--------------+
-|           INSTR_RETIRED_ANY          |  FIXC0  | 529483700000 |
-|         CPU_CLK_UNHALTED_CORE        |  FIXC1  | 290125700000 |
-|         CPU_CLK_UNHALTED_REF         |  FIXC2  | 218438400000 |
+|           INSTR_RETIRED_ANY          |  FIXC0  | 529483300000 |
+|         CPU_CLK_UNHALTED_CORE        |  FIXC1  | 288638100000 |
+|         CPU_CLK_UNHALTED_REF         |  FIXC2  | 260792500000 |
 | FP_COMP_OPS_EXE_SSE_FP_PACKED_DOUBLE |   PMC0  |            0 |
-| FP_COMP_OPS_EXE_SSE_FP_SCALAR_DOUBLE |   PMC1  | 206609800000 |
+| FP_COMP_OPS_EXE_SSE_FP_SCALAR_DOUBLE |   PMC1  | 206505500000 |
 |       SIMD_FP_256_PACKED_DOUBLE      |   PMC2  |            0 |
 +--------------------------------------+---------+--------------+
 
 +----------------------+-----------+
 |        Metric        |   Core 1  |
 +----------------------+-----------+
-|  Runtime (RDTSC) [s] |   95.5171 |
-| Runtime unhalted [s] |  126.4286 |
-|      Clock [MHz]     | 3047.8815 |
-|          CPI         |    0.5479 |
-|      DP MFLOP/s      | 2163.0656 |
+|  Runtime (RDTSC) [s] |  113.7776 |
+| Runtime unhalted [s] |  125.7803 |
+|      Clock [MHz]     | 2539.8012 |
+|          CPI         |    0.5451 |
+|      DP MFLOP/s      | 1814.9926 |
 |    AVX DP MFLOP/s    |         0 |
 |    Packed MUOPS/s    |         0 |
-|    Scalar MUOPS/s    | 2163.0656 |
+|    Scalar MUOPS/s    | 1814.9926 |
 +----------------------+-----------+
 
 Region op2, Group 1: FLOPS_DP
 +-------------------+-----------+
 |    Region Info    |   Core 1  |
 +-------------------+-----------+
-| RDTSC Runtime [s] | 79.588190 |
+| RDTSC Runtime [s] | 97.200580 |
 |     call count    |        10 |
 +-------------------+-----------+
 
@@ -52,23 +51,29 @@ Region op2, Group 1: FLOPS_DP
 |                 Event                | Counter |    Core 1    |
 +--------------------------------------+---------+--------------+
 |           INSTR_RETIRED_ANY          |  FIXC0  | 480800500000 |
-|         CPU_CLK_UNHALTED_CORE        |  FIXC1  | 249388100000 |
-|         CPU_CLK_UNHALTED_REF         |  FIXC2  | 181961500000 |
+|         CPU_CLK_UNHALTED_CORE        |  FIXC1  | 251263700000 |
+|         CPU_CLK_UNHALTED_REF         |  FIXC2  | 222205000000 |
 | FP_COMP_OPS_EXE_SSE_FP_PACKED_DOUBLE |   PMC0  |            0 |
-| FP_COMP_OPS_EXE_SSE_FP_SCALAR_DOUBLE |   PMC1  | 208543000000 |
+| FP_COMP_OPS_EXE_SSE_FP_SCALAR_DOUBLE |   PMC1  | 209111600000 |
 |       SIMD_FP_256_PACKED_DOUBLE      |   PMC2  |            0 |
 +--------------------------------------+---------+--------------+
 
 +----------------------+-----------+
 |        Metric        |   Core 1  |
 +----------------------+-----------+
-|  Runtime (RDTSC) [s] |   79.5882 |
-| Runtime unhalted [s] |  108.6763 |
-|      Clock [MHz]     | 3145.1190 |
-|          CPI         |    0.5187 |
-|      DP MFLOP/s      | 2620.2757 |
+|  Runtime (RDTSC) [s] |   97.2006 |
+| Runtime unhalted [s] |  109.4936 |
+|      Clock [MHz]     | 2594.8789 |
+|          CPI         |    0.5226 |
+|      DP MFLOP/s      | 2151.3411 |
 |    AVX DP MFLOP/s    |         0 |
 |    Packed MUOPS/s    |         0 |
-|    Scalar MUOPS/s    | 2620.2757 |
+|    Scalar MUOPS/s    | 2151.3411 |
 +----------------------+-----------+
 
+--------------------------------------------------------------------------------
+CPU name:	Intel(R) Core(TM) i7-3610QM CPU @ 2.30GHz
+CPU type:	Intel Core IvyBridge processor
+CPU clock:	1.56 GHz
+--------------------------------------------------------------------------------
+--------------------------------------------------------------------------------

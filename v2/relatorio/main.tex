@@ -1,0 +1,322 @@
+\documentclass[12pt]{article}
+
+\usepackage{sbc-template}
+
+\usepackage{float}
+
+\usepackage{mathtools}
+
+\usepackage{graphicx,url}
+
+\usepackage[brazil]{babel}
+%\usepackage[latin1]{inputenc}
+\usepackage[utf8]{inputenc}
+% UTF-8 encoding is recommended by ShareLaTex
+\usepackage{verbatim}
+\usepackage{listings}
+\usepackage{xcolor}
+
+\usepackage{fancyhdr}
+\fancyhf{}
+\cfoot{\thepage}
+\pagestyle{fancy}
+
+\definecolor{verde}{rgb}{0,0.5,0}
+
+%para customizar o código (ver https://en.wikibooks.org/wiki/LaTeX/Source_Code_Listings)
+\lstset{language=C, %defina a linguagem usada no trabalho
+              belowcaptionskip=1\baselineskip,
+                breaklines=true,
+                frame=false,
+                xleftmargin=\parindent,
+                showstringspaces=false,
+                basicstyle=\footnotesize\ttfamily,
+                keywordstyle=\bfseries\color{green!40!black},
+                commentstyle=\itshape\color{purple!40!black},
+                identifierstyle=\color{blue},
+                stringstyle=\color{orange},
+                numbers=left,
+            }
+
+\sloppy
+
+\title{Relatório de Desempenho do Método do Gradiente Conjugado\\ Universidade Federal do Paraná}
+
+\author{Felipe Shi Iu Wu\inst{1}, Lucas Olini\inst{1} }
+
+
+\address{Ciência da Computação -- Universidade Federal do Paraná (UFPR)
+%\nextinstitute
+%  Department of Computer Science -- University of Durham\\
+%  Durham, U.K.
+%\nextinstitute
+ % Departamento de Sistemas e Computação\\
+  %Universidade Regional de Blumenal (FURB) -- Blumenau, SC -- Brazil
+  \email{\{fsiw15,lo15\}@inf.ufpr.br}
+}
+
+\begin{document}
+
+\maketitle
+
+\begin{resumo}
+  Este documento apresenta as alterações no algoritmo do Gradiente Conjugado já realizado na primeira parte do trabalho prático, demonstraremos as explicações e razões das melhorias, assim como as oscilações no desempenho do algoritmo durante a otimização. Para comprovar os resultados, apresentaremos gráficos comparando as versões do algoritmo.
+\end{resumo}
+
+\section{Introdução}
+
+A primeira parte do Trabalho Prático consistia em implementar um programa computacional que calcule a solução para um sistema linear de ordem \textit{n} da forma \textit{Ax} = \textit{b} utilizando o método do Gradiente Conjugado. A matriz A é uma matriz de banda, simétrica, definida positiva, e altamente esparsa gerada utilizando a função disponibilizada pelo professor. A função que gera o vetor de termos independentes \textit{b} também foi disponibilizada.
+
+A segunda parte do trabalho tinha como objetivo otimizar o algoritmo e avaliar o seu desempenho, procurando obter uma melhora no desempenho na operação de multiplicação da matriz de banda por vetor \textit{(MMV)} e na operação de multiplicação de vetores \textit{(MVV)}. Justificando as razões pelas quais efetuamos cada alteração. Os testes que efetuamos foram: tempo, banda de memória, cache miss e operações aritméticas.
+
+A arquitetura do processador usada para efetuar os testes demonstrados neste documento está detalhada a seguir.
+
+\begin{table}[H]
+\centering
+\caption{Máquina i1}
+\label{my-label}
+\begin{tabular}{ll}
+CPU name         & Intel(R) Core(TM) i7-4770 CPU @ 3.40GHz \\
+CPU type         & Intel Core Haswell processor            \\
+CPU stepping     & 3                                       \\ \hline
+Sockets          & 1                                       \\
+Cores per socket & 4                                       \\
+Threads per core & 2
+\end{tabular}
+\end{table}
+
+\begin{table}[H]
+\centering
+\caption{Cache}
+\label{my-label}
+\begin{tabular}{ll}
+Level        & 1                              \\
+Size         & 32 kB                          \\ \hline
+Level        & 2                              \\
+Size         & 256 kB                         \\ \hline
+Level        & 3                              \\
+Size         & 8 MB
+\end{tabular}
+\end{table}
+
+\section{Método de Armazenamento} \label{sec:firstpage}
+
+Durante a execução do trabalho, tivemos que fazer escolhas de como iríamos implementar certas funções e lógicas, e a mais importante delas foi a decisão de como iríamos armazenar a matriz \textit{A}. A princípio tentamos um tipo de matriz que guardasse as diagonais em colunas, o problema foi na hora de indexar e fazer a multiplicação com outro vetor, fizemos várias tentativas de multiplicação, mas não tivemos êxito. Diante disso, partimos para outra forma de armazenamento das diagonais. Após muitas pesquisas, decidimos guardar de forma intercalada em um vetor. Melhor dizendo, guardamos uma linha da matriz atrás da outra em um vetor dinâmico, sem armazenar os 0(zeros) e armazenando as diagonais simétricas apenas uma vez. A Tabela 1 apresenta como a matriz abaixo é armazenada.
+
+$$ \left(
+  \begin{array}{c c c c c}
+     a_{00} & a_{01} & 0      & 0      & 0\\
+     a_{10} & a_{11} & a_{12} & 0      & 0\\
+     0      & a_{21} & a_{22} & a_{23} & 0\\
+     0      & 0      & a_{32} & a_{33} & a_{34}\\
+     0      & 0      & 0      & a_{43} & a_{44}\\
+  \end{array} \right)
+$$
+
+\begin{table}[H]
+\centering
+\caption{Armazenamento da matriz}
+\label{my-label}
+\begin{tabular}{l|l|l|l|l|l|l|l|l|l|l|}
+\cline{2-11}
+Posição no Vetor  & 0   & 1   & 2   & 3   & 4   & 5   & 6   & 7   & 8   & 9   \\ \cline{2-11}
+Posição na Matriz & a_{00} & a_{01} & a_{11} & a_{12} & a_{22} & a_{23} & a_{33} & a_{34} & a_{44} & a_{45} \\ \cline{2-11}
+\end{tabular}
+\end{table}
+
+\section{Otimizações}
+
+Visando a melhora de desempenho da primeira versão do trabalho, fizemos otimizações nos laços que efetuam a multiplicação de vetor por vetor e multiplicação de matriz por vetor. Grande parte da otimização feita no trabalho é relacionada ao uso das instruções AVX, o qual é uma extensão de instruções que permite o uso de operações SIMD(Single Instruction Multiple Data) na arquitetura do processador usado, possibilitando o paralelismo das operações, o qual gera um ganho de desempenho muito grande. Este paralelismo só é possível pois as instruções AVX lidam com registradores de 256 bits, ou seja, como os valores usados em nossa aplicação são de 64 bits, conseguimos fazer quatro operações aritméticas com apenas uma instrução AVX.
+
+Na seção do código da multiplicação de vetor por vetor, ao implementarmos as operações com as instruções AVX, já obtivemos um ganho muito grande, e visto que esta multiplicação é algo simples, não fizemos mais nenhuma otimização.
+
+Já na seção da multiplicação de matriz por vetor, nossa função estava muito compacta, efetuando desvios condicionais a cada \textit{loop} do laço, gerando então um gasto de processamento e de tempo desnecessário. Para resolvermos isto, usamos a prática de otimização chamada de \textit{loop unrolling}, a qual desmembra o laço em vários outros, eliminando as operações de condição, consequentemente eliminando \textit{branch mispredictions}, gerando então um processamento de dados mais eficiente e consequentemente um ganho considerável no tempo de execução. Além disso, também implementamos todas as operações referentes à multiplicação de matriz por vetor com as instruções AVX, gerando um ganho de processamento e de tempo ainda maior.
+
+\section{Código fonte}
+
+\subsection{Versão original}
+\begin{lstlisting}
+for(i=0; i< N ; i++){
+    resultado[i] = 0;
+    for(j=MAIOR(i-k,0); j<MENOR(k+i+1,N); j++){
+        if((j>=i) && (j-i <= k))
+            resultado[i] += a[(k+1)*i +(j-i)] * b[j];
+        else if ((j<i) && (i-j <= k))
+            resultado[i] += a[(k+1)*j +(i-j)] * b[j];
+    }
+}
+\end{lstlisting}
+
+A versão original consiste em fazer a multiplicação indexando as posições da matriz a partir do vetor, para isso, foi escolhido \textit{if}s para posições que não estão armazenadas no vetor e procurando seu correspondente.
+
+\subsection{Versão sem desvios condicionais}
+Um dos pontos citados, pelo professor, na entrega da 1ª versão é a importância de evitar desvios condicionais, ainda mais dentro de laços. Com isso em mente, a primeira otimização foi justamente essa substituição de desvios por \textit{loops}.
+\begin{lstlisting}
+for(i=0; i< k ; i++){
+    resultado[i] = 0;
+    //Bloco 1
+    for(j=0; j< i; j++)
+       resultado[i] += a[(j*(k+1))+(i-j)]*b[j];
+    //Bloco 2
+    for(; j <= k+i; j++)
+        resultado[i] += a[(i*(k+1))+(j-i)]*b[j];
+}
+
+for(; i< N-k ; i++){
+    //Bloco 3
+    for(j=i-k; j< i; j++)
+        resultado[i] += a[(j*(k+1))+(i-j)]*b[j];
+    //Bloco 4
+    for(; j <= k+i; j++)
+        resultado[i] += a[(i*(k+1))+(j-i)]*b[j];
+}
+
+for(; i< N ; i++){
+    //Bloco 5
+    for(j=i-k; j< i; j++)
+        resultado[i] += a[(j*(k+1))+(i-j)]*b[j];
+    //Bloco 6
+    for(; j < N; j++)
+        resultado[i] += a[(i*(k+1))+(j-i)]*b[j];
+}
+\end{lstlisting}
+
+\begin{itemize}
+\item Bloco 1: percorre as posições da matriz do lado que não é armazenado no vetor(a esquerda da diagonal principal) e começa sempre do primeiro elemento da linha até a diagonal principal.
+\item Bloco 2: percorre as posições da matriz do lado que é armazenado no vetor e começa sempre da diagonal principal até o último elemento da linha diferente de \textit{zero}, complementando o \textit{Bloco 1}.
+\item Bloco 3 e 4: percorrem as linhas da matrizes que não precisam se preocupar com as laterais, isso significa que as linhas possuem elementos diferentes de \textit{zero} iguais ao número de banda.
+\item Bloco 5: percorre as posições da matriz do lado que não é armazenado no vetor(a esquerda da diagonal principal) e começam sempre do primeiro elemento da linha diferente de \textit{zero} até a diagonal principal.
+\item Bloco 6: percorre as posições da matriz do lado que é armazenado no vetor e começa sempre da diagonal principal até o último elemento da linha, complementando o \textit{Bloco 5}.
+\end{itemize}
+Os blocos 1, 2, 5 e 6, diferentes dos blocos 3 e 4, precorrem linhas da matriz nas quais o número de elementos diferentes de \textit{zero} é menor do que o número de bandas.
+
+
+\subsection{Versão com AVX}
+\begin{lstlisting}
+for(i=0; i< k ; i++){
+    resultado[i] = 0;
+    //Bloco 1
+    int mod = i%4;
+    for(j=0; j<mod; ++j){
+        resultado[i] += a[(j*(k+1))+(i-j)]*b[j];
+    }
+    for(j=mod; j<i; j=j+4){
+        aAVX = _mm256_set_pd(a[((j+3)*(k+1))+(i-(j+3))],
+                             a[((j+2)*(k+1))+(i-(j+2))],
+                             a[((j+1)*(k+1))+(i-(j+1))],
+                             a[(j*(k+1))+(i-j)]);
+        bAVX = _mm256_loadu_pd(&(b[j]));
+        auxAVX = _mm256_mul_pd(aAVX, bAVX);
+        resultado[i] += auxAVX[0] + auxAVX[1] + auxAVX[2]
+                      + auxAVX[3];
+    }
+
+    //Bloco 2
+    mod = (k+i+1)%4;
+    for(j=i; j<(i+mod); ++j){
+        resultado[i] += a[(i*(k+1))+(j-i)]*b[j];
+    }
+    for(j=(i+mod); j<=k+i; j=j+4){
+        aAVX = _mm256_set_pd(a[(i*(k+1))+((j+3)-i)],
+                             a[(i*(k+1))+((j+2)-i)],
+                             a[(i*(k+1))+((j+1)-i)],
+                             a[(i*(k+1))+(j-i)]);
+        bAVX = _mm256_loadu_pd(&(b[j]));
+        auxAVX = _mm256_mul_pd(aAVX, bAVX);
+        resultado[i] += auxAVX[0] + auxAVX[1] + auxAVX[2]
+                      + auxAVX[3];
+    }
+}
+
+...
+
+    //Bloco 6
+    mod = N%4;
+    for(j=i; j <(i+mod); ++j){
+        resultado[i] += a[(i*(k+1))+(j-i)]*b[j];
+    }
+    for(j=(i+mod); j<N; j=j+4){
+        aAVX = _mm256_set_pd(a[(i*(k+1))+((j+3)-i)],
+                             a[(i*(k+1))+((j+2)-i)],
+                             a[(i*(k+1))+((j+1)-i)],
+                             a[(i*(k+1))+(j-i)]);
+        bAVX = _mm256_loadu_pd(&(b[j]));
+        auxAVX = _mm256_mul_pd(aAVX, bAVX);
+        resultado[i] += auxAVX[0] + auxAVX[1] + auxAVX[2]
+                      + auxAVX[3];
+    }
+}
+\end{lstlisting}
+
+A versão em AVX possui a mesma abordagem nos blocos, ou seja, cada um continua com a mesma função, a diferença é que neste versão todas as operação são feitas com instruções AVX para melhorar o desempenho. Sendo assim, como os registradores AVX possuem 256 bits e os valores utilizados por nós possuem 64 bits, nós conseguimos paralelizar quatro operações, por isso fazemos com que a cada \textit{loop} do segundo laço de cada bloco avance de quatro em quatro unidades (\textit{j=j+4}). O primeiro laço de cada bloco existe pois nem sempre o número de iterações deste será múltiplo de quatro, por isso, sempre antes de começarem as operações, nós dividimos o número de iterações totais do bloco por quatro a fim de obter o resto desta divisão. Esse resto vai ser a quantidade de iterações realizadas no primeiro laço.
+
+\section{Análise de dados e gráficos}\label{sec:analisedosdados}
+\subsection{Flops AVX}\label{sec:analisedosdados}
+
+\begin{figure}[H]
+\centering
+\includegraphics[width=.7\textwidth]{img/FLOPSAVX7.png}
+\caption{Flops\_AVX - 7 bandas}
+\end{figure}
+
+\begin{figure}[H]
+\centering
+\includegraphics[width=.7\textwidth]{img/FLOPS_AVX_27.png}
+\caption{Flops\_AVX - 27 bandas}
+\end{figure}
+
+O teste de operações aritméticas, grupo FLOPS\_AVX, nos disponibiliza os valores da taxa de operações aritméticas com valores em ponto flutuante, em MFLOP/s. Visto que, tanto na multiplicação de vetor por vetor quanto na multiplicação de matriz por vetor, todas as operações são em ponto flutuante, então é muito importante que esta taxa seja alta para que o desempenho seja bom. Ao analisarmos os gráficos obtidos, vemos que houve um crescimento desta taxa na 2ª versão, mostrando que o desempenho da aplicação está bem melhor e mais otimizado.
+
+\subsection{L2CACHE - Cache Miss}\label{sec:analisedosdados}
+
+\begin{figure}[H]
+\centering
+\includegraphics[width=.7\textwidth]{img/L2CACHE7.png}
+\caption{Cache Miss Ratio - 7 bandas}
+\end{figure}
+
+\begin{figure}[H]
+\centering
+\includegraphics[width=.7\textwidth]{img/L2CACHE27.png}
+\caption{Cache Miss Ratio - 27 bandas}
+\end{figure}
+
+O teste de \textit{cache miss}, grupo L2CACHE, nos disponibiliza os valores da taxa de \textit{cache misses} da L2 durante a execução de determinado trecho do código. Ao analisarmos os gráficos obtidos, percebemos que não houve uma melhoria neste quesito da primeira versão para a segunda versão. Isto ocorreu pois o método de armazenamento na 1ª e na 2ª versão foram conservados, a otimização ocorreu apenas nas execuções das multiplicações.
+
+\subsection{L3 - Banda de Memória}
+
+\begin{figure}[H]
+\centering
+    \includegraphics[width=.7\textwidth]{img/L37.png}
+    \caption{L3 - 7 bandas}
+\end{figure}
+
+\begin{figure}[H]
+\centering
+    \includegraphics[width=.7\textwidth]{img/L327.png}
+    \caption{L3 - 27 bandas}
+\end{figure}
+
+O teste de banda de memória, grupo L3, nos disponibiliza os valores da taxa de transferência de dados entre a memória e o processador, em MBytes/s. Como nossa aplicação é para cálculos científicos, esta troca de dados entre memória e processador é muito intensa, e quanto maior a taxa, mais dados estão sendo transmitidos, consequentemente o desempenho da aplicação se torna maior. Ao analisarmos os gráficos obtidos, vemos que houve uma melhora nesta taxa na 2ª versão da aplicação, e um dos motivos para isso é a paralelização das operações que as instruções AVX possibilitam.
+
+\subsection{Tempo de Execução}
+
+\begin{figure}[H]
+\centering
+    \includegraphics[width=.7\textwidth]{img/TIME7.png}
+    \caption{Tempo - 7 bandas}
+\end{figure}
+
+\begin{figure}[H]
+\centering
+    \includegraphics[width=1\textwidth]{img/TIME27.png}
+    \caption{Tempo - 27 bandas}
+\end{figure}
+
+Um dos critérios mais significativos para comprovar a otimização do algoritmo é a melhora no tempo de execução, mesmo não sendo uma diferença gritante, ficou claro que além do método todo, o tempo para executar as multiplicação foram reduzidos. Notando que na 1ª versão, ao aumentar a quantidade de bandas de 7 para 27 o tempo aumentou muito mais que na 2ª versão, consequentemente o aumento das bandas já não afeta mais tanto o desempenho do algoritmo.
+
+\section{Considerações Finais e Conclusão}
+
+A primeira etapa do trabalho consistia em implementar o método do \textit{Gradiente Conjugado}. Por conta da complexidade dos testes, fizemos otimizações já na primeira versão, isso inclui o método de armazenamento que adotamos atualmente, a parte difícil é a indexação para multiplicar por um vetor. Na primeira versão foi usado \textit{desvios condicionais} e na segunda foi usado \textit{loops} separados. A otimização se torna mais clara nos momentos em que o tempo de execução é decaído, sendo assim, durante o processo de aperfeiçoamento, este tempo foi um dos fatores no qual mais nos baseamos. Grande parte dos nossos estudos e dedicação nesta segunda etapa do trabalho foi a otimização da multiplicação de matriz por vetor, visto que a função ficou bem extensa devido ao número de laços, porém através do \textit{loop unrolling} e da implementação das instruções AVX, obtivemos um resultado bem satisfatório.
+
+\end{document}

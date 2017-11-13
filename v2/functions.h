@@ -49,7 +49,6 @@ double *A, 				/**< Matriz A[N][N] implementada como um vetor[N*N], padrão mant
        *L_aux,
        *U_aux,
 	   *R, 				/**< Matriz R[N][N] para guardar o residuo da resolução do SL */
-	   *I, 				/**< Matriz I[N][N] para armazenar a matriz Identidade (eca)*/
 	   *z; 				/**< vetor[N] auxiliar utilizado em Lz = I */
 
 
@@ -60,7 +59,7 @@ int compara_float(double a, double b, char operacao);
 double *generateSquareRandomMatrix(int n );
 double timestamp (void);
 void print_matriz (double *A, int n);
-inline void backward_substitution(double *U, double *x, double *z, int i);
-inline void forward_substitution(double *L, double *z, double *R);
+void inline backward_substitution(double *U, double *x, double *z, int i);
+void inline forward_substitution(double *L, double *z, double *R);
 void gerar_saida(FILE *output_f);
 double soma_kahan(double *vet, int n);

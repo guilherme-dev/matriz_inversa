@@ -1,4 +1,4 @@
-set ytic auto
+set logscale y
 set key right bottom
 set title "Cache Miss L2"
 set xlabel "Tamanho da matriz (N)"

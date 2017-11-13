@@ -3,71 +3,72 @@ CPU name:	Intel(R) Core(TM) i7-3610QM CPU @ 2.30GHz
 CPU type:	Intel Core IvyBridge processor
 CPU clock:	2.29 GHz
 --------------------------------------------------------------------------------
-t_op1 1414.17
-t_op2 591.493
+V2222
+t_op1 1418.14
+t_op2 343.563
 Fim!
 --------------------------------------------------------------------------------
 Region op1, Group 1: FLOPS_DP
 +-------------------+----------+
 |    Region Info    |  Core 1  |
 +-------------------+----------+
-| RDTSC Runtime [s] | 0.700227 |
+| RDTSC Runtime [s] | 0.703696 |
 |     call count    |     5632 |
 +-------------------+----------+
 
 +--------------------------------------+---------+------------+
 |                 Event                | Counter |   Core 1   |
 +--------------------------------------+---------+------------+
-|           INSTR_RETIRED_ANY          |  FIXC0  | 4535006000 |
-|         CPU_CLK_UNHALTED_CORE        |  FIXC1  | 2235643000 |
-|         CPU_CLK_UNHALTED_REF         |  FIXC2  | 1648582000 |
+|           INSTR_RETIRED_ANY          |  FIXC0  | 4528825000 |
+|         CPU_CLK_UNHALTED_CORE        |  FIXC1  | 2241016000 |
+|         CPU_CLK_UNHALTED_REF         |  FIXC2  | 1658316000 |
 | FP_COMP_OPS_EXE_SSE_FP_PACKED_DOUBLE |   PMC0  |          0 |
-| FP_COMP_OPS_EXE_SSE_FP_SCALAR_DOUBLE |   PMC1  |   45932580 |
-|       SIMD_FP_256_PACKED_DOUBLE      |   PMC2  |  829092500 |
+| FP_COMP_OPS_EXE_SSE_FP_SCALAR_DOUBLE |   PMC1  |   45899480 |
+|       SIMD_FP_256_PACKED_DOUBLE      |   PMC2  |  828687200 |
 +--------------------------------------+---------+------------+
 
 +----------------------+-----------+
 |        Metric        |   Core 1  |
 +----------------------+-----------+
-|  Runtime (RDTSC) [s] |    0.7002 |
-| Runtime unhalted [s] |    0.9742 |
-|      Clock [MHz]     | 3111.9537 |
-|          CPI         |    0.4930 |
-|      DP MFLOP/s      | 4801.7336 |
-|    AVX DP MFLOP/s    | 4736.1369 |
-|    Packed MUOPS/s    | 1184.0342 |
-|    Scalar MUOPS/s    |   65.5967 |
+|  Runtime (RDTSC) [s] |    0.7037 |
+| Runtime unhalted [s] |    0.9766 |
+|      Clock [MHz]     | 3101.1220 |
+|          CPI         |    0.4948 |
+|      DP MFLOP/s      | 4775.7070 |
+|    AVX DP MFLOP/s    | 4710.4807 |
+|    Packed MUOPS/s    | 1177.6202 |
+|    Scalar MUOPS/s    |   65.2262 |
 +----------------------+-----------+
 
 Region op2, Group 1: FLOPS_DP
 +-------------------+----------+
 |    Region Info    |  Core 1  |
 +-------------------+----------+
-| RDTSC Runtime [s] | 0.591542 |
+| RDTSC Runtime [s] | 0.343574 |
 |     call count    |       10 |
 +-------------------+----------+
 
 +--------------------------------------+---------+------------+
 |                 Event                | Counter |   Core 1   |
 +--------------------------------------+---------+------------+
-|           INSTR_RETIRED_ANY          |  FIXC0  | 3422520000 |
-|         CPU_CLK_UNHALTED_CORE        |  FIXC1  | 1913100000 |
-|         CPU_CLK_UNHALTED_REF         |  FIXC2  | 1348992000 |
+|           INSTR_RETIRED_ANY          |  FIXC0  | 1868056000 |
+|         CPU_CLK_UNHALTED_CORE        |  FIXC1  | 1109877000 |
+|         CPU_CLK_UNHALTED_REF         |  FIXC2  |  783174000 |
 | FP_COMP_OPS_EXE_SSE_FP_PACKED_DOUBLE |   PMC0  |          0 |
-| FP_COMP_OPS_EXE_SSE_FP_SCALAR_DOUBLE |   PMC1  |  161394800 |
-|       SIMD_FP_256_PACKED_DOUBLE      |   PMC2  |  670023500 |
+| FP_COMP_OPS_EXE_SSE_FP_SCALAR_DOUBLE |   PMC1  |   28575320 |
+|       SIMD_FP_256_PACKED_DOUBLE      |   PMC2  |  673791900 |
 +--------------------------------------+---------+------------+
 
 +----------------------+-----------+
 |        Metric        |   Core 1  |
 +----------------------+-----------+
-|  Runtime (RDTSC) [s] |    0.5915 |
-| Runtime unhalted [s] |    0.8337 |
-|      Clock [MHz]     | 3254.3895 |
-|          CPI         |    0.5590 |
-|      DP MFLOP/s      | 4803.5300 |
-|    AVX DP MFLOP/s    | 4530.6925 |
-|    Packed MUOPS/s    | 1132.6731 |
-|    Scalar MUOPS/s    |  272.8375 |
+|  Runtime (RDTSC) [s] |    0.3436 |
+| Runtime unhalted [s] |    0.4837 |
+|      Clock [MHz]     | 3252.0542 |
+|          CPI         |    0.5941 |
+|      DP MFLOP/s      | 7927.6770 |
+|    AVX DP MFLOP/s    | 7844.5062 |
+|    Packed MUOPS/s    | 1961.1266 |
+|    Scalar MUOPS/s    |   83.1708 |
 +----------------------+-----------+
 
