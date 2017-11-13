@@ -15,6 +15,7 @@
 \usepackage{verbatim}
 \usepackage{listings}
 \usepackage{xcolor}
+\usepackage{fancyref}
 
 \usepackage{fancyhdr}
 \fancyhf{}
@@ -40,19 +41,19 @@
 
 \sloppy
 
-\title{Relatório de Desempenho do Método do Gradiente Conjugado\\ Universidade Federal do Paraná}
+\title{Otimização do Desempenho na Inversão de Matrizes\\ Universidade Federal do Paraná}
 
-\author{Felipe Shi Iu Wu\inst{1}, Lucas Olini\inst{1} }
+\author{Guilherme Gomes dos Santos\inst{1}}
 
 
-\address{Ciência da Computação -- Universidade Federal do Paraná (UFPR)
+\address{Bacharelado em Ciência da Computação -- Universidade Federal do Paraná (UFPR)
 %\nextinstitute
 %  Department of Computer Science -- University of Durham\\
 %  Durham, U.K.
 %\nextinstitute
  % Departamento de Sistemas e Computação\\
   %Universidade Regional de Blumenal (FURB) -- Blumenau, SC -- Brazil
-  \email{\{fsiw15,lo15\}@inf.ufpr.br}
+  \email{ggs12@inf.ufpr.br}
 }
 
 \begin{document}
@@ -60,25 +61,31 @@
 \maketitle
 
 \begin{resumo}
-  Este documento apresenta as alterações no algoritmo do Gradiente Conjugado já realizado na primeira parte do trabalho prático, demonstraremos as explicações e razões das melhorias, assim como as oscilações no desempenho do algoritmo durante a otimização. Para comprovar os resultados, apresentaremos gráficos comparando as versões do algoritmo.
+ O trabalho prático da disciplina Introdução à Computação Científica é dividido em duas partes. Na primeira, foi desenvolvido um algoritmo na linguagem C que calculava a inversa de uma matriz, utilizando fatoração LU com pivotamento parcial e refinamento sucessivo. Na segunda parte do trabalho, efetuou-se melhorias no código com o objetivo de melhorar seu desempenho. Este documento apresenta os resultados obtidos após estas otmizações.
 \end{resumo}
 
 \section{Introdução}
+Durante a primeira etapa do trabalho prático (\textbf{v1}), foi desenvolvido um programa computacional em linguagem C que, dada uma matriz quadrada A de dimensão $n$, devolve a matriz inversa de ${A}$ (${A}^{-1}$), tal que $A {A}^{-1} = I$, onde ${I}$ é a matriz identidade. O algoritmo desenvolvido utiliza eliminação de Gauss com pivotamento parcial, fatoração LU e refinamento sucessivo.
 
-A primeira parte do Trabalho Prático consistia em implementar um programa computacional que calcule a solução para um sistema linear de ordem \textit{n} da forma \textit{Ax} = \textit{b} utilizando o método do Gradiente Conjugado. A matriz A é uma matriz de banda, simétrica, definida positiva, e altamente esparsa gerada utilizando a função disponibilizada pelo professor. A função que gera o vetor de termos independentes \textit{b} também foi disponibilizada.
+Para a segunda etapa do trabalho (\textbf{v2}), dois trechos do código foram otimizadas de forma a obter uma melhora de desempenho durante a execução do método:
+\begin{itemize}
+\item Na operação de resolução do sistema linear triangular (\textbf{op1}): $Ly = b; Ux = y$;
+\item Na operação de cálculo do resíduo (\textbf{op2}): $R = I - A{A}^{-1}$;
+\end{itemize}
 
-A segunda parte do trabalho tinha como objetivo otimizar o algoritmo e avaliar o seu desempenho, procurando obter uma melhora no desempenho na operação de multiplicação da matriz de banda por vetor \textit{(MMV)} e na operação de multiplicação de vetores \textit{(MVV)}. Justificando as razões pelas quais efetuamos cada alteração. Os testes que efetuamos foram: tempo, banda de memória, cache miss e operações aritméticas.
+Os testes de desempenho foram executados utilizando a ferramenta {Likwid}$^{[1]}$, analisando os seguintes aspectos: Tempo médio do cálculo da \textbf{op1} e tempo médio do cálculo da \textbf{op2}, banda de memória (Memory bandwidth [MBytes/s]) do grupo L3, cache miss (data cache miss ratio) do grupo L2 e operações aritméticas (MFLOP/s) do grupo FLOPS\_DP.
 
-A arquitetura do processador usada para efetuar os testes demonstrados neste documento está detalhada a seguir.
+A arquitetura do computador utilizado durante os testes de otimização, obtida através da ferramenta likwid-topology, é exibida abaixo:
+
 
 \begin{table}[H]
 \centering
-\caption{Máquina i1}
+\caption{Processador}
 \label{my-label}
 \begin{tabular}{ll}
-CPU name         & Intel(R) Core(TM) i7-4770 CPU @ 3.40GHz \\
-CPU type         & Intel Core Haswell processor            \\
-CPU stepping     & 3                                       \\ \hline
+CPU name         & Intel(R) Core(TM) i7-3610QM CPU @ 2.30GHz \\
+CPU type         & Intel Core IvyBridge processor            \\
+CPU stepping     & 9                                       \\ \hline
 Sockets          & 1                                       \\
 Cores per socket & 4                                       \\
 Threads per core & 2
@@ -87,67 +94,123 @@ Threads per core & 2
 
 \begin{table}[H]
 \centering
-\caption{Cache}
+\caption{Cache Topology}
 \label{my-label}
 \begin{tabular}{ll}
 Level        & 1                              \\
-Size         & 32 kB                          \\ \hline
+Size         & 32 kB                          \\
+Associativity: & 8                            \\
+Cache line size: &  64                        \\\hline
 Level        & 2                              \\
-Size         & 256 kB                         \\ \hline
+Size         & 256 kB                         \\
+Associativity: & 8                            \\
+Cache line size: &  64                        \\\hline
 Level        & 3                              \\
-Size         & 8 MB
+Size         & 6 MB                           \\
+Associativity: & 12                           \\
+Cache line size: &  64                        \\
 \end{tabular}
 \end{table}
 
-\section{Método de Armazenamento} \label{sec:firstpage}
+\section{Estrutura dos dados} \label{sec:firstpage}
 
-Durante a execução do trabalho, tivemos que fazer escolhas de como iríamos implementar certas funções e lógicas, e a mais importante delas foi a decisão de como iríamos armazenar a matriz \textit{A}. A princípio tentamos um tipo de matriz que guardasse as diagonais em colunas, o problema foi na hora de indexar e fazer a multiplicação com outro vetor, fizemos várias tentativas de multiplicação, mas não tivemos êxito. Diante disso, partimos para outra forma de armazenamento das diagonais. Após muitas pesquisas, decidimos guardar de forma intercalada em um vetor. Melhor dizendo, guardamos uma linha da matriz atrás da outra em um vetor dinâmico, sem armazenar os 0(zeros) e armazenando as diagonais simétricas apenas uma vez. A Tabela 1 apresenta como a matriz abaixo é armazenada.
+Para a primeira etapa do trabalho todas as matrizes foram armazenadas em vetores unidimensionais, visando alocação de memória contígua. Os vetores contendo as matrizes $L$ e $U$ apresentavam as seguintes estruturas:
+
+$L$:
 
 $$ \left(
   \begin{array}{c c c c c}
-     a_{00} & a_{01} & 0      & 0      & 0\\
-     a_{10} & a_{11} & a_{12} & 0      & 0\\
-     0      & a_{21} & a_{22} & a_{23} & 0\\
-     0      & 0      & a_{32} & a_{33} & a_{34}\\
-     0      & 0      & 0      & a_{43} & a_{44}\\
+     1       & 0      & 0      & 0      & 0\\
+     l_{10}  & 1      & 0      & 0      & 0\\
+     l_{20}  & l_{21} & 1      & 0      & 0\\
+     l_{30}  & l_{31} & l_{32} & 1      & 0\\
+     l_{40}  & l_{41} & l_{42} & l_{43} & 1 \\
   \end{array} \right)
 $$
 
+$U$:
+
+$$ \left(
+  \begin{array}{c c c c c}
+     u_{00}  & u_{01}    & u_{02} & u_{03}  & u_{04}\\
+     0       & u_{11}    & u_{12} & u_{13}  & u_{14}\\
+     0       & 0         & u_{22} & u_{23}  & u_{24}\\
+     0       & 0         & 0      & u_{33}  & u_{34}\\
+     0       & 0         & 0      & 0       & u_{44} \\
+  \end{array} \right)
+$$
+
+Observa-se que armazenar o conteúdo desta forma é ineficiente, uma vez que todos os zeros das matrizes não são utilizados durante a execução do método.
+
+\section{Otimizações}
+\subsection{Estrutura de dados}
+O primeiro objetivo durante a \textbf{v2} foi criar estruturas para armazenar estas matrizes de maneira mais eficiente, evitando o desperdício de memória e acesso não contínuo aos dados. As tabelas 3 e 4 demonstram a maneira encontrada para armazenar as matrizes $L$ e $U$.
+
 \begin{table}[H]
 \centering
-\caption{Armazenamento da matriz}
+\caption{Matriz L: Vetor melhorado}
 \label{my-label}
 \begin{tabular}{l|l|l|l|l|l|l|l|l|l|l|}
 \cline{2-11}
-Posição no Vetor  & 0   & 1   & 2   & 3   & 4   & 5   & 6   & 7   & 8   & 9   \\ \cline{2-11}
-Posição na Matriz & a_{00} & a_{01} & a_{11} & a_{12} & a_{22} & a_{23} & a_{33} & a_{34} & a_{44} & a_{45} \\ \cline{2-11}
+i   & 0      & 1      & 2      & 3      & 4      & 5      & 6      & 7      & 8      & 9   \\ \cline{2-11}
+L[i] & $l_{10}$ & $l_{20}$ & $l_{21}$ & $l_{30}$ & $l_{31}$ & $l_{32}$ & $l_{40}$ & $l_{41}$ & $l_{42}$ & $l_{43}$ \\ \cline{2-11}
 \end{tabular}
 \end{table}
 
-\section{Otimizações}
+\begin{table}[H]
+\caption{Matriz U: Vetor melhorado}
+\label{my-label}
+\begin{tabular}{l|l|l|l|l|l|l|l|l|l|l|l|l|l|l|l|}
+\cline{2-16}
+i   & 0      & 1      & 2      & 3      & 4      & 5      & 6      & 7      & 8      & 9   & 10  & 11  & 12  & 13  & 14 \\ \cline{2-16}
+U[i] & $u_{00}$ & $u_{01}$ & $u_{02}$ & $u_{03}$ & $u_{04}$ & $u_{11}$ & $u_{12}$ & $u_{13}$ & $u_{14}$ & $u_{22}$ & $u_{23}$ & $u_{24}$ & $u_{33}$ & $u_{34}$ & $u_{44}$ \\ \cline{2-16}
+\end{tabular}
+\end{table}
 
-Visando a melhora de desempenho da primeira versão do trabalho, fizemos otimizações nos laços que efetuam a multiplicação de vetor por vetor e multiplicação de matriz por vetor. Grande parte da otimização feita no trabalho é relacionada ao uso das instruções AVX, o qual é uma extensão de instruções que permite o uso de operações SIMD(Single Instruction Multiple Data) na arquitetura do processador usado, possibilitando o paralelismo das operações, o qual gera um ganho de desempenho muito grande. Este paralelismo só é possível pois as instruções AVX lidam com registradores de 256 bits, ou seja, como os valores usados em nossa aplicação são de 64 bits, conseguimos fazer quatro operações aritméticas com apenas uma instrução AVX.
+A primeira versão da estrutura de dados, apresentada na\textbf{v1} do código, não é eficiente pois além de armazenar dados desnecessários, gera um acesso não linear aos elementos da matriz: O acesso é organizado em linhas de cache, que são carregadas de uma única vez. Assim, ao acessar o elemento $l_{10}$ por exemplo, os elementos seguintes da mesma linha da matriz L são trazidos dentro da linha de cache. O próximo elemento a ser acessado é o $l_{20}$, que não estará na cache (para um tamanho de linha da matriz suficientemente grande), gerando assim um cache miss.
 
-Na seção do código da multiplicação de vetor por vetor, ao implementarmos as operações com as instruções AVX, já obtivemos um ganho muito grande, e visto que esta multiplicação é algo simples, não fizemos mais nenhuma otimização.
+Assim, ao alinhar os dados nas estruturas descritas os próximos elementos a serem acessados estão sempre na mesma (ou próxima) linha de cache, já que são alocados de maneira contígua. Além disso, consequentemente o tamanho dos vetores é menor: $|L| = (n * (n+1)) / 2 - n$ e $|U| = (n * (n+1)) / 2$ .
 
-Já na seção da multiplicação de matriz por vetor, nossa função estava muito compacta, efetuando desvios condicionais a cada \textit{loop} do laço, gerando então um gasto de processamento e de tempo desnecessário. Para resolvermos isto, usamos a prática de otimização chamada de \textit{loop unrolling}, a qual desmembra o laço em vários outros, eliminando as operações de condição, consequentemente eliminando \textit{branch mispredictions}, gerando então um processamento de dados mais eficiente e consequentemente um ganho considerável no tempo de execução. Além disso, também implementamos todas as operações referentes à multiplicação de matriz por vetor com as instruções AVX, gerando um ganho de processamento e de tempo ainda maior.
 
-\section{Código fonte}
+\subsection{Código}
 
-\subsection{Versão original}
+Para otimizar as estruturas de dados das matrizes $L$ e $U$ foi necessário criar um novo método de percorrer os vetores. Isso ocorre pois cada linha da matriz possui um tamanho diferente, gerando a necessidade de cálculos de índices. Além disso, outra dificuldade surge: o pivotamento parcial executa trocas de linhas nas matrizes $L$ e $U$.
+
+Como a dificuldade para implementar um algoritmo que efetuase estas trocas de linhas em cima dos vetores otimizados seria grande, a decisão foi de manter matrizes auxiliares L\_aux e U\_aux (vetores de dimensão $n * n$) para se efetuar a decomposição LU. Esta alternativa tira proveito do fato de que a eliminação de Gauss com pivotamento parcial é executada apenas uma vez durante o método.
+
+O código abaixo é executado após a conclusão do pivotamento parcial, no qual se efetua uma cópia dos valores úteis contidos nos vetores auxiliares L\_aux e U\_aux para os vetores otimizados L e U.
+
 \begin{lstlisting}
-for(i=0; i< N ; i++){
-    resultado[i] = 0;
-    for(j=MAIOR(i-k,0); j<MENOR(k+i+1,N); j++){
-        if((j>=i) && (j-i <= k))
-            resultado[i] += a[(k+1)*i +(j-i)] * b[j];
-        else if ((j<i) && (i-j <= k))
-            resultado[i] += a[(k+1)*j +(i-j)] * b[j];
+    // Inicializa o vetor alinhado L com os valores da matrix inferior
+    for (i = 0; i < N; i++ ) {
+        for (j = 0; j < i; j++) {
+            L[index(i,j)] = L_aux[i*N+j];
+        }
     }
-}
+
+    // Inicializa o vetor alinhado U com os valores da matrix superior
+    for (i = 0; i < N; ++i) {
+        for (j = i; j < N; ++j) {
+            U[uindex(i,j,N)] = U_aux[i*N+j];
+        }
+    }
 \end{lstlisting}
 
-A versão original consiste em fazer a multiplicação indexando as posições da matriz a partir do vetor, para isso, foi escolhido \textit{if}s para posições que não estão armazenadas no vetor e procurando seu correspondente.
+Observa-se que ainda que adicionando esta cópia de dados ao código obtenha-se um ganho em desempenho, e isso é possível por a eliminação de Gauss é executada uma vez, enquanto os vetores L e U serão utilizados $número de iterações * n$ vezes.
+
+Como cada linha dos vetores L e U possui uma dimensão diferente, foi necessário criar as seguintes macros para que a indexação dos vetores fosse feita de maneira simples:
+
+\begin{lstlisting}
+#define size(n) (((n)*(n+1))/2)
+#define offset(i,j) (size((i)-1)+(j))
+#define index(i,j) ((i)<(j) ? 0 :  (offset((i),(j))))
+#define uindex(i,j,n) ((i)>(j) ? 0 : (size(n)-size((n)-(i))+(j)-(i)))
+
+//Acessar L[i,j] : L[index(i,j)]
+//Acessar U[i,j] : U[uindex(i,j,N)]
+\end{lstlisting}
+
+
 
 \subsection{Versão sem desvios condicionais}
 Um dos pontos citados, pelo professor, na entrega da 1ª versão é a importância de evitar desvios condicionais, ainda mais dentro de laços. Com isso em mente, a primeira otimização foi justamente essa substituição de desvios por \textit{loops}.
