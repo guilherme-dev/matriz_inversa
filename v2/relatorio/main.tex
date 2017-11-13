@@ -47,12 +47,6 @@
 
 
 \address{Bacharelado em Ciência da Computação -- Universidade Federal do Paraná (UFPR)
-%\nextinstitute
-%  Department of Computer Science -- University of Durham\\
-%  Durham, U.K.
-%\nextinstitute
- % Departamento de Sistemas e Computação\\
-  %Universidade Regional de Blumenal (FURB) -- Blumenau, SC -- Brazil
   \email{ggs12@inf.ufpr.br}
 }
 
@@ -172,7 +166,7 @@ A primeira versão da estrutura de dados, apresentada na\textbf{v1} do código, 
 Assim, ao alinhar os dados nas estruturas descritas os próximos elementos a serem acessados estão sempre na mesma (ou próxima) linha de cache, já que são alocados de maneira contígua. Além disso, consequentemente o tamanho dos vetores é menor: $|L| = (n * (n+1)) / 2 - n$ e $|U| = (n * (n+1)) / 2$ .
 
 
-\subsection{Código}
+\subsection{Código op1}
 
 Para otimizar as estruturas de dados das matrizes $L$ e $U$ foi necessário criar um novo método de percorrer os vetores. Isso ocorre pois cada linha da matriz possui um tamanho diferente, gerando a necessidade de cálculos de índices. Além disso, outra dificuldade surge: o pivotamento parcial executa trocas de linhas nas matrizes $L$ e $U$.
 
@@ -181,22 +175,22 @@ Como a dificuldade para implementar um algoritmo que efetuase estas trocas de li
 O código abaixo é executado após a conclusão do pivotamento parcial, no qual se efetua uma cópia dos valores úteis contidos nos vetores auxiliares L\_aux e U\_aux para os vetores otimizados L e U.
 
 \begin{lstlisting}
-    // Inicializa o vetor alinhado L com os valores da matrix inferior
-    for (i = 0; i < N; i++ ) {
-        for (j = 0; j < i; j++) {
-            L[index(i,j)] = L_aux[i*N+j];
-        }
+// Inicializa o vetor alinhado L com os valores da matrix inferior
+for (i = 0; i < N; i++ ) {
+    for (j = 0; j < i; j++) {
+        L[index(i,j)] = L_aux[i*N+j];
     }
+}
 
-    // Inicializa o vetor alinhado U com os valores da matrix superior
-    for (i = 0; i < N; ++i) {
-        for (j = i; j < N; ++j) {
-            U[uindex(i,j,N)] = U_aux[i*N+j];
-        }
+// Inicializa o vetor alinhado U com os valores da matrix superior
+for (i = 0; i < N; ++i) {
+    for (j = i; j < N; ++j) {
+        U[uindex(i,j,N)] = U_aux[i*N+j];
     }
+}
 \end{lstlisting}
 
-Observa-se que ainda que adicionando esta cópia de dados ao código obtenha-se um ganho em desempenho, e isso é possível por a eliminação de Gauss é executada uma vez, enquanto os vetores L e U serão utilizados $número de iterações * n$ vezes.
+Observa-se que ainda que adicionando esta cópia de dados ao código obtenha-se um ganho em desempenho, e isso é possível por a eliminação de Gauss é executada uma vez, enquanto os vetores L e U serão utilizados número de iterações $* n$ vezes.
 
 Como cada linha dos vetores L e U possui uma dimensão diferente, foi necessário criar as seguintes macros para que a indexação dos vetores fosse feita de maneira simples:
 
@@ -210,176 +204,166 @@ Como cada linha dos vetores L e U possui uma dimensão diferente, foi necessári
 //Acessar U[i,j] : U[uindex(i,j,N)]
 \end{lstlisting}
 
+Como visto na disciplina, se um vetor é alocado de forma que seu primeiro elemento não seja mapeado para o primeiro elemento da linha de cache, sempre que esta linha é acessada há dados que são trazidos e não utilizados. Assim, para melhorar a utilização do tamanho da linha de cache (64 Bytes no computador utilizado) os vetores foram alocados com a função posix\_memalign(), garantindo assim que o endereço do espaço de memória alocado seja um múltiplo do parâmetro de alinhamento escolhido.
 
-
-\subsection{Versão sem desvios condicionais}
-Um dos pontos citados, pelo professor, na entrega da 1ª versão é a importância de evitar desvios condicionais, ainda mais dentro de laços. Com isso em mente, a primeira otimização foi justamente essa substituição de desvios por \textit{loops}.
 \begin{lstlisting}
-for(i=0; i< k ; i++){
-    resultado[i] = 0;
-    //Bloco 1
-    for(j=0; j< i; j++)
-       resultado[i] += a[(j*(k+1))+(i-j)]*b[j];
-    //Bloco 2
-    for(; j <= k+i; j++)
-        resultado[i] += a[(i*(k+1))+(j-i)]*b[j];
+align_L = posix_memalign((void**)&L, 64, lower_size * sizeof(double));
+align_U = posix_memalign((void**)&U, 64, upper_size * sizeof(double));
+\end{lstlisting}
+
+Percebe\-se então que os vetores L e U são alocados em endereços múltiplos de 64 (tamanho da linha de cache), onde lower\_size e upper\_size são as dimensões dos vetores.
+
+\subsection{Código op2}
+
+Para a otimização da \textbf{op2}, na qual é efetuada a multiplicação das matrizes $A$ e ${A}^{-1}$, o primeiro passo seria otimizar o acesso ao vetor AI contendo a matriz inversa, já que esse acesso é feito por colunas (collumn major order). Como durante a implementação da \textbf{v1} isso já foi levado em consideração, o vetor AI já foi alocado de maneira que o acesso fosse row major order, removendo assim a necessidade de fazer esta otimização na \textbf{v2}.
+
+A seguir é apresentado o código para a \textbf{op2} desenvolvido na \textbf{v1} do trabalho:
+\begin{lstlisting}
+for (i = 0; i < N; i++) {
+	for (j = 0; j < N; j++) {
+		soma = 0.0;
+		for (k = 0; k < N; k++) {
+			soma += A[i*N+k] * AI[k+N*j];
+		}
+		A_AI[i*N+j] = soma;
+	}
 }
 
-for(; i< N-k ; i++){
-    //Bloco 3
-    for(j=i-k; j< i; j++)
-        resultado[i] += a[(j*(k+1))+(i-j)]*b[j];
-    //Bloco 4
-    for(; j <= k+i; j++)
-        resultado[i] += a[(i*(k+1))+(j-i)]*b[j];
-}
-
-for(; i< N ; i++){
-    //Bloco 5
-    for(j=i-k; j< i; j++)
-        resultado[i] += a[(j*(k+1))+(i-j)]*b[j];
-    //Bloco 6
-    for(; j < N; j++)
-        resultado[i] += a[(i*(k+1))+(j-i)]*b[j];
+for (i = 0; i < N; ++i) {
+	for (j = 0; j < N; ++j) {
+        R[row[i]*N+j] = I[i*N+j] - A_AI[i*N+j];
+	}
 }
 \end{lstlisting}
 
-\begin{itemize}
-\item Bloco 1: percorre as posições da matriz do lado que não é armazenado no vetor(a esquerda da diagonal principal) e começa sempre do primeiro elemento da linha até a diagonal principal.
-\item Bloco 2: percorre as posições da matriz do lado que é armazenado no vetor e começa sempre da diagonal principal até o último elemento da linha diferente de \textit{zero}, complementando o \textit{Bloco 1}.
-\item Bloco 3 e 4: percorrem as linhas da matrizes que não precisam se preocupar com as laterais, isso significa que as linhas possuem elementos diferentes de \textit{zero} iguais ao número de banda.
-\item Bloco 5: percorre as posições da matriz do lado que não é armazenado no vetor(a esquerda da diagonal principal) e começam sempre do primeiro elemento da linha diferente de \textit{zero} até a diagonal principal.
-\item Bloco 6: percorre as posições da matriz do lado que é armazenado no vetor e começa sempre da diagonal principal até o último elemento da linha, complementando o \textit{Bloco 5}.
-\end{itemize}
-Os blocos 1, 2, 5 e 6, diferentes dos blocos 3 e 4, precorrem linhas da matriz nas quais o número de elementos diferentes de \textit{zero} é menor do que o número de bandas.
 
+O foco para otimizar a \textbf{op2} foi manter o código nas especificações necessárias para que o compilador pudesse efetuar e vetorização no loop da operação, possibilitando assim o uso dos registradores AVX. Assim, as estruturas de dados foram alocadas de maneira alinhada:
 
-\subsection{Versão com AVX}
 \begin{lstlisting}
-for(i=0; i< k ; i++){
-    resultado[i] = 0;
-    //Bloco 1
-    int mod = i%4;
-    for(j=0; j<mod; ++j){
-        resultado[i] += a[(j*(k+1))+(i-j)]*b[j];
-    }
-    for(j=mod; j<i; j=j+4){
-        aAVX = _mm256_set_pd(a[((j+3)*(k+1))+(i-(j+3))],
-                             a[((j+2)*(k+1))+(i-(j+2))],
-                             a[((j+1)*(k+1))+(i-(j+1))],
-                             a[(j*(k+1))+(i-j)]);
-        bAVX = _mm256_loadu_pd(&(b[j]));
-        auxAVX = _mm256_mul_pd(aAVX, bAVX);
-        resultado[i] += auxAVX[0] + auxAVX[1] + auxAVX[2]
-                      + auxAVX[3];
-    }
+align_A = posix_memalign((void**)&A, 32, N * N * sizeof(double));
+align_AI = posix_memalign((void**)&AI, 32, N * N * sizeof(double));
+align_R = posix_memalign((void**)&R, 32, N * N * sizeof(double));
+\end{lstlisting}
 
-    //Bloco 2
-    mod = (k+i+1)%4;
-    for(j=i; j<(i+mod); ++j){
-        resultado[i] += a[(i*(k+1))+(j-i)]*b[j];
-    }
-    for(j=(i+mod); j<=k+i; j=j+4){
-        aAVX = _mm256_set_pd(a[(i*(k+1))+((j+3)-i)],
-                             a[(i*(k+1))+((j+2)-i)],
-                             a[(i*(k+1))+((j+1)-i)],
-                             a[(i*(k+1))+(j-i)]);
-        bAVX = _mm256_loadu_pd(&(b[j]));
-        auxAVX = _mm256_mul_pd(aAVX, bAVX);
-        resultado[i] += auxAVX[0] + auxAVX[1] + auxAVX[2]
-                      + auxAVX[3];
-    }
-}
+O alinhamento foi feito em 32 bytes para ser compatível com o uso dos registradores AVX, já que cada registrador armazena 256 bits (4 doubles, 8 bytes cada). Além disso, como a vetorização de loops permite a execução de desvios condicionais na forma de atribuição, foi possível remover a utilização da matriz auxiliar A\_AI, economizando assim memória e transferência de dados. O código para a \textbf{v2} ficou:
 
-...
-
-    //Bloco 6
-    mod = N%4;
-    for(j=i; j <(i+mod); ++j){
-        resultado[i] += a[(i*(k+1))+(j-i)]*b[j];
-    }
-    for(j=(i+mod); j<N; j=j+4){
-        aAVX = _mm256_set_pd(a[(i*(k+1))+((j+3)-i)],
-                             a[(i*(k+1))+((j+2)-i)],
-                             a[(i*(k+1))+((j+1)-i)],
-                             a[(i*(k+1))+(j-i)]);
-        bAVX = _mm256_loadu_pd(&(b[j]));
-        auxAVX = _mm256_mul_pd(aAVX, bAVX);
-        resultado[i] += auxAVX[0] + auxAVX[1] + auxAVX[2]
-                      + auxAVX[3];
-    }
+\begin{lstlisting}
+// Primeira versão de otimização
+for (i = 0; i < N; i++) {
+	for (j = 0; j < N; j++) {
+		soma = 0.0;
+		for (k = 0; k < N; k++) {
+			soma += A[i*N+k] * AI[j*N+k];
+		}
+		R[i*N+j] = (i == j) ? 1 - soma: 0 - soma;
+	}
 }
 \end{lstlisting}
 
-A versão em AVX possui a mesma abordagem nos blocos, ou seja, cada um continua com a mesma função, a diferença é que neste versão todas as operação são feitas com instruções AVX para melhorar o desempenho. Sendo assim, como os registradores AVX possuem 256 bits e os valores utilizados por nós possuem 64 bits, nós conseguimos paralelizar quatro operações, por isso fazemos com que a cada \textit{loop} do segundo laço de cada bloco avance de quatro em quatro unidades (\textit{j=j+4}). O primeiro laço de cada bloco existe pois nem sempre o número de iterações deste será múltiplo de quatro, por isso, sempre antes de começarem as operações, nós dividimos o número de iterações totais do bloco por quatro a fim de obter o resto desta divisão. Esse resto vai ser a quantidade de iterações realizadas no primeiro laço.
+Outra mudança foi deixar de utilizar o vetor de índices row[i], que era utilizado para armazenar as permutações de linhas efetuadas em R. Essa mudança foi necessária para que não ocorressem acessos fora de ordem no vetor R. Assim o vetor R tem suas linhas trocadas durante o pivotamento parcial para que todos os acessos seguintes aos seus dados sejam em ordem.
 
-\section{Análise de dados e gráficos}\label{sec:analisedosdados}
-\subsection{Flops AVX}\label{sec:analisedosdados}
+A utilização da variável auxiliar \emph{soma} dentro do loop da \textbf{op2} foi necessária para permitir que o compilador GCC gerasse a vetorização. Caso o vetor R fosse utilizado no lugar da variável, o compilador assumiria uma dependência de dados que impossibilitaria a vetorização.
 
-\begin{figure}[H]
-\centering
-\includegraphics[width=.7\textwidth]{img/FLOPSAVX7.png}
-\caption{Flops\_AVX - 7 bandas}
-\end{figure}
+Com estas mudanças e a utilização das flags -fstrict-aliasing e -ffast-math durante a compilação, o GCC conseguiu gerar código vetorizado para utilização dos registradores AVX, isto foi confirmado utilizando a flag -ftree-vectorizer-verbose, que exibe informações referentes ao processo de vetorização. O compilador vetorizou diversos loops do código, e em cada vetorização o cálculo do unroll e \emph{remainder} foi feito automaticamente. Além de vetorizar o loop apresentado na linha 60 do trecho de código acima, ele acabou vetorizando também os loops da \textbf{op1}, que efetuam forward\_substitution() e backward\_substitution().
 
-\begin{figure}[H]
-\centering
-\includegraphics[width=.7\textwidth]{img/FLOPS_AVX_27.png}
-\caption{Flops\_AVX - 27 bandas}
-\end{figure}
+Ressalta-se a mudança na definição dessas funções, que na \textbf{v2} tornaram-se inline, gerando assim melhora de performance evitando chamadas de funções dentro do loop que é executado $n$ vezes a cada iteração do refinamento.
 
-O teste de operações aritméticas, grupo FLOPS\_AVX, nos disponibiliza os valores da taxa de operações aritméticas com valores em ponto flutuante, em MFLOP/s. Visto que, tanto na multiplicação de vetor por vetor quanto na multiplicação de matriz por vetor, todas as operações são em ponto flutuante, então é muito importante que esta taxa seja alta para que o desempenho seja bom. Ao analisarmos os gráficos obtidos, vemos que houve um crescimento desta taxa na 2ª versão, mostrando que o desempenho da aplicação está bem melhor e mais otimizado.
+\subsection{Tentativa de loop unroll na op2}
 
-\subsection{L2CACHE - Cache Miss}\label{sec:analisedosdados}
+Buscando melhorar ainda mais o desempenho da \textbf{op2}, foi desenvolvido o seguinte loop unroll exibido no código a seguir.
 
-\begin{figure}[H]
-\centering
-\includegraphics[width=.7\textwidth]{img/L2CACHE7.png}
-\caption{Cache Miss Ratio - 7 bandas}
-\end{figure}
+Com o unroll do laço $j$, o acesso à matriz A é reaproveitado dentro do laço $k$. Assim, a cada iteração em $j$ é calculado os valores de R[i,j], R[i,j+1], R[i,j+2] e R[i,j+3], aproveitando o valor de A[i*N+k] que já está em cache. Assim, o acesso à matriz A, que antes acontecia $N^2$ vezes, é reduzido para $N^2/4$.
 
-\begin{figure}[H]
-\centering
-\includegraphics[width=.7\textwidth]{img/L2CACHE27.png}
-\caption{Cache Miss Ratio - 27 bandas}
-\end{figure}
+De fato esta operação trouxe uma redução no número de caches misses: para $n$ = 2000, o cache miss ratio era em média $0.3364$, reduzindo para $0.2185$ após o unroll. Porém ao comparar resultados da otimização com e sem o loop unroll, constatou-se que embora o unroll proporcionasse a redução de cache miss, a utilização da banda de memória diminuiu drasticamente. Além disso, o tempo de execução médio da \textbf{op2} permaneceu igual ao da \textbf{v1}, ou seja, nenhuma melhoria prática no desempenho.
+\begin{lstlisting}
+//Segunda versao de otimizacao: tentativa de unroll
+for (i = 0; i < N; i++) {           //laco i
+	for (j = 0; j < size; ++j) {    //laco j
+		soma_v[0] = 0.0;
+		soma_v[1] = 0.0;
+		soma_v[2] = 0.0;
+		soma_v[3] = 0.0;
+		for (k = 0; k < N; k++) {   //laco k
+			soma_v[0] += A[i*N+k] * AI[j*N+k];
+			soma_v[1] += A[i*N+k] * AI[(j+1)*N+k];
+			soma_v[2] += A[i*N+k] * AI[(j+2)*N+k];
+			soma_v[3] += A[i*N+k] * AI[(j+3)*N+k];
+		}
+		R[i*N+j] = (i == j) ? 1 - soma_v[0]: 0 - soma_v[0];
+		R[i*N+j+1] = (i == j+1) ? 1 - soma_v[1]: 0 - soma_v[1];
+		R[i*N+j+2] = (i == j+2) ? 1 - soma_v[2]: 0 - soma_v[2];
+		R[i*N+j+3] = (i == j+3) ? 1 - soma_v[3]: 0 - soma_v[3];
+	}
+}
+//Remainder
+for (i = 0; i < N; i++) {
+	for (j = size; j < N; j++) {
+		soma = 0.0;
+		for (k = 0; k < N; k++) {
+			soma += A[i*N+k] * AI[j*N+k];
+		}
+		R[i*N+j] = (i == j) ? 1 - soma: 0 - soma;
+	}
+}
+\end{lstlisting}
+\emph{Por isso esta tentativa na utilização do loop unroll foi descartada}. Após exaustivos testes, chegou-se a conclusão de que a primeira versão da otimização é melhor: Mesmo com o aumento de cache miss, o tempo médio de execução da \textbf{op1} cai pela metade, a utilização da banda de memória quase dobra.
 
-O teste de \textit{cache miss}, grupo L2CACHE, nos disponibiliza os valores da taxa de \textit{cache misses} da L2 durante a execução de determinado trecho do código. Ao analisarmos os gráficos obtidos, percebemos que não houve uma melhoria neste quesito da primeira versão para a segunda versão. Isto ocorreu pois o método de armazenamento na 1ª e na 2ª versão foram conservados, a otimização ocorreu apenas nas execuções das multiplicações.
 
-\subsection{L3 - Banda de Memória}
-
-\begin{figure}[H]
-\centering
-    \includegraphics[width=.7\textwidth]{img/L37.png}
-    \caption{L3 - 7 bandas}
-\end{figure}
-
-\begin{figure}[H]
-\centering
-    \includegraphics[width=.7\textwidth]{img/L327.png}
-    \caption{L3 - 27 bandas}
-\end{figure}
-
-O teste de banda de memória, grupo L3, nos disponibiliza os valores da taxa de transferência de dados entre a memória e o processador, em MBytes/s. Como nossa aplicação é para cálculos científicos, esta troca de dados entre memória e processador é muito intensa, e quanto maior a taxa, mais dados estão sendo transmitidos, consequentemente o desempenho da aplicação se torna maior. Ao analisarmos os gráficos obtidos, vemos que houve uma melhora nesta taxa na 2ª versão da aplicação, e um dos motivos para isso é a paralelização das operações que as instruções AVX possibilitam.
-
-\subsection{Tempo de Execução}
-
-\begin{figure}[H]
-\centering
-    \includegraphics[width=.7\textwidth]{img/TIME7.png}
-    \caption{Tempo - 7 bandas}
-\end{figure}
+\section{Resultados}
+\subsection{Teste de tempo}
 
 \begin{figure}[H]
 \centering
-    \includegraphics[width=1\textwidth]{img/TIME27.png}
-    \caption{Tempo - 27 bandas}
+\includegraphics[width=1\textwidth]{img/time.png}
+\caption{Tempo médio de execução op1 e op2}
 \end{figure}
 
-Um dos critérios mais significativos para comprovar a otimização do algoritmo é a melhora no tempo de execução, mesmo não sendo uma diferença gritante, ficou claro que além do método todo, o tempo para executar as multiplicação foram reduzidos. Notando que na 1ª versão, ao aumentar a quantidade de bandas de 7 para 27 o tempo aumentou muito mais que na 2ª versão, consequentemente o aumento das bandas já não afeta mais tanto o desempenho do algoritmo.
+O gráfico acima apresenta as médias de tempo (em ms) para execução das operações \textbf{op1} e \textbf{op2} em ambas as versões do código. Percebe-se uma grande redução na média de tempo após $n = 256$. Essa redução ocorre principalmente pela utilização de instruções SIMD. Como os registradores AVX passaram a ser utilizados na \textbf{v2}, é esperado que o tempo necessário para executar as operações seja reduzido, uma vez que com AVX as operações são efetuadas em 4 doubles a cada instrução (SIMD). A diferença nos resultados é bastante aparente para matrizes com $n = 2000$ por exemplo, onde a média de tempo na \textbf{v1 op2} era de 8285.02ms e foi reduzida para 4165.51ms na \textbf{v2 op2}.
 
-\section{Considerações Finais e Conclusão}
+\subsection{Operações Ariméticas}
 
-A primeira etapa do trabalho consistia em implementar o método do \textit{Gradiente Conjugado}. Por conta da complexidade dos testes, fizemos otimizações já na primeira versão, isso inclui o método de armazenamento que adotamos atualmente, a parte difícil é a indexação para multiplicar por um vetor. Na primeira versão foi usado \textit{desvios condicionais} e na segunda foi usado \textit{loops} separados. A otimização se torna mais clara nos momentos em que o tempo de execução é decaído, sendo assim, durante o processo de aperfeiçoamento, este tempo foi um dos fatores no qual mais nos baseamos. Grande parte dos nossos estudos e dedicação nesta segunda etapa do trabalho foi a otimização da multiplicação de matriz por vetor, visto que a função ficou bem extensa devido ao número de laços, porém através do \textit{loop unrolling} e da implementação das instruções AVX, obtivemos um resultado bem satisfatório.
+\begin{figure}[H]
+\centering
+\includegraphics[width=1\textwidth]{img/flops-scalar.png}
+\caption{Operações em ponto flutuante}
+\end{figure}
+
+As alterações feitas no código somadas às flags corretas possibilitaram ao compilador vetorizar os principais loops contidos nas operações \textbf{op1} e \textbf{op2}. Ao executar o likwid-perfctr monitorando grupo FLOPS\_DP, observou-se que aproximadamente 90\% das operações em ponto flutuante são executadas com AVX. Por consequência, há um grande aumento na quantidade de MFLOPS/s.
+
+Destacam-se as métricas para $n = 512$, em que para a\textbf{v2 op2} as operações em ponto flutuante aumentaram de $2185$ MFLOPS/s para  $7927$ MFLOPS/s, das quais $7844$ são AVX DP MFLOP/s.
+
+
+\subsection{Banda de memória - L3}
+
+\begin{figure}[H]
+\centering
+    \includegraphics[width=1\textwidth]{img/banda.png}
+    \caption{Memory bandwidth na cache L3}
+\end{figure}
+
+Como o problema da inversão de matriz é Memory bound, a taxa de transferência de dados entre memória e processador tem um papel fundamental no desempenho geral do algoritmo. As mudanças feitas principalmente na \textbf{op1} possibilitaram um alinhamento de dados mais eficiente. Isso somado à utilização dos registradores AVX gerou um aumento de Memory bandwidth (MBytes/s) para matrizes com $n > 256$.
+
+É possível perceber no gráfico que para matrizes com $n < 256$, a taxa de transferência de dados é baixa. Isso ocorre pois com matrizes dessa dimensão grande parte dos dados cabe na cache L2, reduzindo o acesso à cache L3.
+
+Destaca-se as métricas para $n = 512$, em que a banda para \textbf{op2} era de $8826$ Mbytes/s na \textbf{v1} e passou para $23392$ Mbytes/s na \textbf{v2}.
+
+
+\subsection{Cache Miss L2}
+
+\begin{figure}[H]
+\centering
+    \includegraphics[width=1\textwidth]{img/cachemiss.png}
+    \caption{Cache miss - L2}
+\end{figure}
+
+O gráfico mostra que não houve redução no número de cache miss (cache miss ratio) na L2. Com as otimizações feitas nas estruturas de dados da \textbf{op1} esperava-se uma redução nestes números, uma vez que na \textbf{v2} os dados estão totalmente alinhados em memória.
+
+Como não houve mudança explicíta de acesso aos dados na \textbf{v2 op2}, é notável que não exista uma redução no número de cache miss. Porém é possível observar que para $n$ a partir de  $1000$ o cache miss na \textbf{v2} tem um leve aumento. Isto pode ter ocorrido devido ao fato do compilador executar as instruções SIMD em uma quantidade múltipla de $4$ de elementos, e executar as operações para os elementos restantes em um laço separado (remainder). O acesso à esses dados restantes ocorre fora de ordem, o que pode aumentar o número da taxa de cache miss.
+
+Observa-se também que como citado anteriormente, para $n < 256 $ a cache miss ratio é muito pequena, ressaltando que para matrizes dessa dimensão os dados permanecem na cache L2, tendo por consequência menos cache miss e uma menor transferência de dados (como visto no gráfico de banda de memória).
+
+\section{Conclusão}
+
+
 
 \end{document}
