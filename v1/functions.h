@@ -34,7 +34,6 @@ double *r, 					/**< Vetor de dimensão \max_iter para armazenar a norma do resi
 		*aux_v;			   /**< Vetor auxiliar de dimensão N */
 double temp_begin, temp_end, temp_lu; /**< Variaveis para calculo de tempo */
 double *temp_iter, *temp_res; /**< Vetores para armazenar tempo das iterações, usado para calcular a media */
-double t_op1, t_op2;
 double *A, 				/**< Matriz A[N][N] implementada como um vetor[N*N], padrão mantido para todas matrizes bidimensionais. */
 	   *x, 				/**< Vetor [N], guarda cada coluna da matriz inversa AX */
 	   *AX, 			/**< Matriz AX[N][N] auxiliar, matriz inversa (guarda todos os valores de x). */

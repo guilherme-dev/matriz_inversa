@@ -57,7 +57,6 @@ void processa_argumentos (int argc, char const *argv[], int *N, int *max_iter, d
  */
 int compara_float(double a, double b, char operacao) {
 	double diff_abs = fabs(a - b);
-	double diff = a - b;
 	double maior;
 	a = fabs(a);
 	b = fabs(b);
@@ -69,7 +68,7 @@ int compara_float(double a, double b, char operacao) {
 		else
 			return 0;
 	} else if (operacao == MENOR) {
-		if (diff <  DBL_EPSILON)
+		if (diff_abs <=  DBL_EPSILON)
 			return 1;
 		else
 			return 0;
@@ -115,48 +114,25 @@ void print_matriz(double *A, int n) {
 }
 
 /**
- * Efetua soma de kahan para vetor[].
- *
- */
-double soma_kahan (double *v, int n) {
-    double sum = 0.0;
-    double c = 0.0;                 // A running compensation for lost low-order bits.
-    double y, t;
-    int i;
-    for (i = 0; i < n; ++i)
-    {
-    	y = v[i] - c;
-    	t = sum + y;
-    	c = (t - sum) - y;
-    	sum = t;
-    }
-    return sum;
-}
-
-/**
  * Imprime resultado no arquivo de saída.
  *
  */
 void gerar_saida (FILE *output_f) {
-	// fprintf(output_f, "#\n");
-/*	for (i = 0; i < max_iter && r[i] >= 0; ++i) {
-		media_res += temp_res[i];
-		media_iter += temp_iter[i];
-		fprintf(output_f, "# iter %d: ||%.17g||\n", i+1, r[i]);
-	}*/
-	// fprintf(output_f, "# Tempo LU: %g\n", temp_lu);
-	// fprintf(output_f, "# Tempo iter: %.17g\n", media_iter / max_iter);
-	// fprintf(output_f, "# Tempo residuo: %.17g\n", media_res / max_iter);
+	// for (i = 0; i < max_iter && r[i] >= 0; ++i) {
+	// 	fprintf(output_f, "# iter %d: ||%.17g||\n", i+1, r[i]);
+	// }
 	// fprintf(output_f, "#\n");
     // #ifdef TESTE
     //     if (N > 100)
     //         return;
     // #endif
-	// for (i = 0; i < N; i++) {
-	// 	for (j = 0; j < N; j++) {
-	// 		fprintf(output_f, "%g ", AX[i+N*j]);
-	// 	}
-	// 	fprintf(output_f, "\n");
-	// }
+	// if (N < 100) {
+    //     for (i = 0; i < N; i++) {
+    // 		for (j = 0; j < N; j++) {
+    // 			fprintf(output_f, "%g ", AI[i+N*j]);
+    // 		}
+    // 		fprintf(output_f, "\n");
+    // 	}
+    // }
     printf("t_op1 %g\nt_op2 %g\n", t_op1 / N * max_iter, t_op2 / 10);
 }

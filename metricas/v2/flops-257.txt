@@ -1,0 +1,74 @@
+--------------------------------------------------------------------------------
+CPU name:	Intel(R) Core(TM) i7-3610QM CPU @ 2.30GHz
+CPU type:	Intel Core IvyBridge processor
+CPU clock:	2.29 GHz
+--------------------------------------------------------------------------------
+V2222
+t_op1 487.924
+t_op2 48.3555
+Fim!
+--------------------------------------------------------------------------------
+Region op1, Group 1: FLOPS_DP
++-------------------+----------+
+|    Region Info    |  Core 1  |
++-------------------+----------+
+| RDTSC Runtime [s] | 0.107674 |
+|     call count    |     2827 |
++-------------------+----------+
+
++--------------------------------------+---------+-----------+
+|                 Event                | Counter |   Core 1  |
++--------------------------------------+---------+-----------+
+|           INSTR_RETIRED_ANY          |  FIXC0  | 635774500 |
+|         CPU_CLK_UNHALTED_CORE        |  FIXC1  | 336951600 |
+|         CPU_CLK_UNHALTED_REF         |  FIXC2  | 276385700 |
+| FP_COMP_OPS_EXE_SSE_FP_PACKED_DOUBLE |   PMC0  |         0 |
+| FP_COMP_OPS_EXE_SSE_FP_SCALAR_DOUBLE |   PMC1  |  11515430 |
+|       SIMD_FP_256_PACKED_DOUBLE      |   PMC2  | 104743300 |
++--------------------------------------+---------+-----------+
+
++----------------------+-----------+
+|        Metric        |   Core 1  |
++----------------------+-----------+
+|  Runtime (RDTSC) [s] |    0.1077 |
+| Runtime unhalted [s] |    0.1468 |
+|      Clock [MHz]     | 2797.5965 |
+|          CPI         |    0.5300 |
+|      DP MFLOP/s      | 3998.0815 |
+|    AVX DP MFLOP/s    | 3891.1341 |
+|    Packed MUOPS/s    |  972.7835 |
+|    Scalar MUOPS/s    |  106.9474 |
++----------------------+-----------+
+
+Region op2, Group 1: FLOPS_DP
++-------------------+----------+
+|    Region Info    |  Core 1  |
++-------------------+----------+
+| RDTSC Runtime [s] | 0.048363 |
+|     call count    |       10 |
++-------------------+----------+
+
++--------------------------------------+---------+-----------+
+|                 Event                | Counter |   Core 1  |
++--------------------------------------+---------+-----------+
+|           INSTR_RETIRED_ANY          |  FIXC0  | 245801400 |
+|         CPU_CLK_UNHALTED_CORE        |  FIXC1  | 142348800 |
+|         CPU_CLK_UNHALTED_REF         |  FIXC2  | 110394200 |
+| FP_COMP_OPS_EXE_SSE_FP_PACKED_DOUBLE |   PMC0  |         0 |
+| FP_COMP_OPS_EXE_SSE_FP_SCALAR_DOUBLE |   PMC1  |   5109904 |
+|       SIMD_FP_256_PACKED_DOUBLE      |   PMC2  |  84794470 |
++--------------------------------------+---------+-----------+
+
++----------------------+-----------+
+|        Metric        |   Core 1  |
++----------------------+-----------+
+|  Runtime (RDTSC) [s] |    0.0484 |
+| Runtime unhalted [s] |    0.0620 |
+|      Clock [MHz]     | 2958.9708 |
+|          CPI         |    0.5791 |
+|      DP MFLOP/s      | 7118.8467 |
+|    AVX DP MFLOP/s    | 7013.1890 |
+|    Packed MUOPS/s    | 1753.2973 |
+|    Scalar MUOPS/s    |  105.6576 |
++----------------------+-----------+
+
