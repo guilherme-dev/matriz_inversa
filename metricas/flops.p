@@ -1,6 +1,6 @@
 set logscale y
 set key right bottom
-set title "Cache Miss L2"
+set title "Operações aritméticas - Scalar"
 set xlabel "Tamanho da matriz (N)"
-set ylabel "L2 miss ratio"
+set ylabel "DP MFLOP/s"
 set xtic auto

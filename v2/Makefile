@@ -1,4 +1,4 @@
-CFLAGS = -Wall -lm -O3 -mavx -march=native -fstrict-aliasing -ffast-math  -ftree-vectorizer-verbose=1# flags de compilacao
+CFLAGS = -Wall -lm -O3 -mavx -march=native -fstrict-aliasing -ffast-math# flags de compilacao
 # -ftree-vectorizer-verbose=1
 
 LDFLAGS = -fopenmp -pthread -DLIKWID_PERFMON  -I/usr/local/include -L/usr/local/lib -llikwid
