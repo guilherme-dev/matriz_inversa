@@ -16,6 +16,7 @@
 \usepackage{listings}
 \usepackage{xcolor}
 \usepackage{fancyref}
+\usepackage{hyperref}
 
 \usepackage{fancyhdr}
 \fancyhf{}
@@ -67,7 +68,7 @@ Para a segunda etapa do trabalho (\textbf{v2}), dois trechos do código foram ot
 \item Na operação de cálculo do resíduo (\textbf{op2}): $R = I - A{A}^{-1}$;
 \end{itemize}
 
-Os testes de desempenho foram executados utilizando a ferramenta {Likwid}$^{[1]}$, analisando os seguintes aspectos: Tempo médio do cálculo da \textbf{op1} e tempo médio do cálculo da \textbf{op2}, banda de memória (Memory bandwidth [MBytes/s]) do grupo L3, cache miss (data cache miss ratio) do grupo L2 e operações aritméticas (MFLOP/s) do grupo FLOPS\_DP.
+Os testes de desempenho foram executados utilizando a ferramenta Likwid, analisando os seguintes aspectos: Tempo médio do cálculo da \textbf{op1} e tempo médio do cálculo da \textbf{op2}, banda de memória (Memory bandwidth [MBytes/s]) do grupo L3, cache miss (data cache miss ratio) do grupo L2 e operações aritméticas (MFLOP/s) do grupo FLOPS\_DP.
 
 A arquitetura do computador utilizado durante os testes de otimização, obtida através da ferramenta likwid-topology, é exibida abaixo:
 
@@ -364,6 +365,21 @@ Observa-se também que como citado anteriormente, para $n < 256 $ a cache miss r
 
 \section{Conclusão}
 
+Conclui-se que com um pouco mais de atenção durante o desenvolvimento de um método é possível obter grandes melhoras de desempenho da aplicação. Durante o desenvolvimento do trabalho foi possível experimentar na prática quais conhecimentos são necessários para uma melhor concepção de como melhorar o desempenho do código.
+
+Fazer vários testes com códigos diferentes e comparar quais métricas melhoravam e quais pioravam em cada experimento foi o aspecto mais importante do desenvolvimento, pois percebe-se que não existe uma solução única que irá resolver todos os problemas de desempenho, cabendo ao desenvolvedor possuir o discernimento e conhecimento necessário para avaliar aquilo que trará o maior custo/benefício na performance. Foi interessante perceber que um código utilizando técnicas mais elaboradas não tinha vantagem prática sobre um código relativamente mais simples.
+
+Conseguir reduzir o tempo médio de execução de uma operação pela metade, apenas alocando dados da maneira correta e tirando proveito das ferramentas disponibilizadas pelo compilador foi gratificante.
+
+\section{Referências}
+
+Além do material de apoio da disciplina, estas foram as principais referências utilizadas no trabalho:
+
+\begin{itemize}
+\item  Using AVX Without Writing AVX Code -
+\url{https://software.intel.com/en-us/articles/using-avx-without-writing-avx-code}
+\item Auto-vectorization in GCC - \url{https://www.gnu.org/software/gcc/projects/tree-ssa/vectorization.html}
+\end{itemize}
 
 
 \end{document}
